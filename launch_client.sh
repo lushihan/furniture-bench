@@ -81,6 +81,7 @@ echo "ISAAC_GYM_PATH: $ISAAC_GYM_PATH"
 
 # Allow docker to connect to X server
 xhost +
+sudo chmod 666 /var/run/docker.sock
 
 if [ "$gpu" = true ]; then
     # Run nvidia-docker command with GPU option

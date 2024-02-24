@@ -111,7 +111,7 @@ class FurnitureBenchEnv(gym.Env):
 
         # Setup cameras.
         self._get_cam_info()
-        self.furniture.start_detection()
+        self.furniture.start_detection() # ****
 
         if self.record:
             record_dir = Path(
@@ -129,7 +129,7 @@ class FurnitureBenchEnv(gym.Env):
         gym.logger.info("Getting camera information...")
         self.cam_intrs = {}
         self.cam_to_base = {}
-        for i in range(1, 4):
+        for i in range(1, 4): # 1, 4 ****
             cam = RealsenseCam(
                 config["camera"][i]["serial"],
                 config["camera"]["color_img_size"],
@@ -184,7 +184,8 @@ class FurnitureBenchEnv(gym.Env):
             action:
                 np.ndarray of size 8 (dx, dy, dz, x, y, z, w, grip)
         """
-        obs, obs_error = self._get_observation()
+        obs, obs_error = self._get_observation() # *****
+        # obs, obs_error = None, "debug"
         action_success = self.robot.execute(action)
 
         if obs_error != PandaError.OK:
@@ -441,7 +442,8 @@ class FurnitureBenchEnv(gym.Env):
         check_found_only = self.randomness == Randomness.HIGH_COLLECT
         in_reset_pose = self.furniture.check_parts_in_reset_pose(
             self.from_skill, check_found_only
-        )
+        )  #****
+        # in_reset_pose = True # *****
         self.env_steps = 0
         img = None
 
@@ -557,7 +559,8 @@ class FurnitureBenchEnv(gym.Env):
                     self.robot.close_gripper(blocking=True)
 
         self.furniture.reset()
-        obs, obs_error = self._get_observation()
+        obs, obs_error = self._get_observation() # ****
+        # obs, obs_error = None, "debug"
         if obs_error != PandaError.OK:
             gym.logger.warn("[env] Warning: Getting observation was not successful.")
             return None, obs_error

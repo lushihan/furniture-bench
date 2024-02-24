@@ -164,6 +164,7 @@ class Model:
                tx: Optional[optax.GradientTransformation] = None) -> 'Model':
         variables = model_def.init(*inputs)
 
+        # print(variables.pop('params'))
         _, params = variables.pop('params')
 
         if tx is not None:

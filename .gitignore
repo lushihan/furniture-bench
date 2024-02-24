@@ -138,3 +138,5 @@ log
 *.avi
 
 checkpoints
+scripted_demo
+furniture_bench/scripts/demonstration
