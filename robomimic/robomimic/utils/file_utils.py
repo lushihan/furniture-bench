@@ -137,7 +137,7 @@ def get_shape_metadata_from_dataset(dataset_path, action_keys, all_obs_keys=None
     if ds_format == "robomimic":
         demo_id = list(f["data"].keys())[0]
         demo = f["data/{}".format(demo_id)]
-        
+
         for key in action_keys:
             assert len(demo[key].shape) == 2 # shape should be (B, D)
         action_dim = sum([demo[key].shape[1] for key in action_keys])

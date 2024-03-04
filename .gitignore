@@ -137,4 +137,11 @@ log
 # video
 *.avi
 
+# hdf5 data
+*.hdf5
+
 checkpoints
+scripted_demo
+demonstration
+demonstration_data
+furniture_bench/scripts/demonstration
