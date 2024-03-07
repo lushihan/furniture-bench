@@ -82,7 +82,7 @@ class DataCollector:
                 randomness = Randomness.HIGH_COLLECT
 
             self.env = gym.make(
-                "FurnitureBench-v0",  # "FurnitureBench-v0"
+                "FurnitureBench-v1", # "FurnitureBench-v0" is original env for data collection; -v1 for active acous collection
                 furniture=furniture,
                 resize_img=False,
                 manual_done=True,
@@ -147,6 +147,7 @@ class DataCollector:
                 n_ob = {}
                 n_ob["color_image1"] = resize(next_obs["color_image1"])
                 n_ob["color_image2"] = resize_crop(next_obs["color_image2"])
+                n_ob["active_acous"] = next_obs["active_acous"]
                 n_ob["robot_state"] = next_obs["robot_state"]
                 n_ob["parts_poses"] = next_obs["parts_poses"]
                 self.obs.append(n_ob)
@@ -224,6 +225,7 @@ class DataCollector:
                 else:
                     ob["color_image1"] = obs["color_image1"]
                     ob["color_image2"] = obs["color_image2"]
+                ob["active_acous"] = obs["active_acous"]
                 ob["robot_state"] = obs["robot_state"]
                 ob["parts_poses"] = obs["parts_poses"]
                 self.obs.append(ob)
@@ -290,6 +292,12 @@ class DataCollector:
         for name in self.depth_names:
             self.depth_paths.append(demo_path / f"{data_name}_{name}")
 
+        # Active acous data paths.
+        self.active_acous_names = ["active_acous"]
+        self.active_acous_paths = []
+        for name in self.active_acous_names:
+            self.active_acous_paths.append(demo_path / f"{data_name}_{name}")
+
         # Save data.
         path = demo_path / f"{data_name}.pkl"
         with open(path, "wb") as f:
@@ -347,6 +355,9 @@ class DataCollector:
                         )
                         for j, obs in enumerate(self.org_obs)
                     )
+
+                # Save raw active acous data in XXX (To-Do)
+                
 
             pickle.dump(data, f)
         print(f"Data saved at {path}")

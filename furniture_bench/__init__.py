@@ -68,3 +68,9 @@ register(
     id="FurnitureImageFeatureDummy-v0",
     entry_point="furniture_bench.envs.policy_envs.furniture_image_feature_dummy:FurnitureImageFeatureDummy",
 )
+
+# FurnitureBench environment with full observation plus active acoustic sensing.
+register(
+    id="FurnitureBench-v1",
+    entry_point="furniture_bench.envs.furniture_bench_env_active_acous:FurnitureBenchEnvActiveAcous",
+)

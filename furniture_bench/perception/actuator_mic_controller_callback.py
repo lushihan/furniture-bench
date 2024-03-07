@@ -60,13 +60,13 @@ class ActiveAcousticSensor(object):
         self.im = None
 
         # for debugging
-        print(self.p.get_device_info_by_index(0)['defaultSampleRate']) # important, otherwise may crash
-        info = self.p.get_host_api_info_by_index(0)
-        numdevices = info.get('deviceCount')
+        # print(self.p.get_device_info_by_index(0)['defaultSampleRate']) # important, otherwise may crash
+        # info = self.p.get_host_api_info_by_index(0)
+        # numdevices = info.get('deviceCount')
 
-        for i in range(0, numdevices):
-            if (self.p.get_device_info_by_host_api_device_index(0, i).get('maxOutputChannels')) > 0:
-                print("Output Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name'))
+        # for i in range(0, numdevices):
+        #     if (self.p.get_device_info_by_host_api_device_index(0, i).get('maxOutputChannels')) > 0:
+        #         print("Output Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name'))
 
     def streaming(self):
         self._stream = self.p.open(rate=self.sample_rate, 
@@ -371,6 +371,7 @@ if __name__=="__main__":
     activeAcoustic.streaming()
     # activeAcoustic.visualize_input()
     activeAcoustic.visualize_spectrogram()
+    activeAcoustic.get_window()
 
     # while activeAcoustic.is_streaming():
         # print(activeAcoustic.get_window())

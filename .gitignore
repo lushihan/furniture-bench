@@ -137,6 +137,8 @@ log
 # video
 *.avi
 
+*.hdf5
+
 checkpoints
 scripted_demo
 demonstration

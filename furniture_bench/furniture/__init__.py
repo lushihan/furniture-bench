@@ -1,5 +1,6 @@
 from furniture_bench.furniture.cabinet import Cabinet
 from furniture_bench.furniture.furniture import Furniture
+# from furniture_bench.furniture.furniture_active_acous import Furniture # for furniture with active acous observation
 from furniture_bench.furniture.one_leg import OneLeg
 from furniture_bench.furniture.stool import Stool
 from furniture_bench.furniture.square_table import SquareTable

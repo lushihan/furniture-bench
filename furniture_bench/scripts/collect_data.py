@@ -4,7 +4,8 @@ import os.path as osp
 
 import furniture_bench
 from furniture_bench.device import make_device
-from furniture_bench.data.data_collector import DataCollector
+# from furniture_bench.data.data_collector import DataCollector
+from furniture_bench.data.data_collector_active_acous import DataCollector # for data collection with active acoustic sensing
 from furniture_bench.config import config
 from furniture_bench.envs.initialization_mode import Randomness
 
