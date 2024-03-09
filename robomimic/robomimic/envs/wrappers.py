@@ -247,7 +247,7 @@ class FurniturePreprocessWrapper(EnvWrapper):
 
     def step(self, action):
         ob_dict, r, done, info = self.env.step(action)
-        r = r.squeeze(-1) # Remove the 1-dimension.
+        # r = r.squeeze(-1) # Remove the 1-dimension.
         return self._preprocess(ob_dict), r, done, info
 
     def _preprocess(self, ob_dict):

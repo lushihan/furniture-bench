@@ -149,7 +149,6 @@ def train(config, device):
                 )
                 if env_meta["env_name"].startswith("Furniture"):
                     import gymnasium as gym
-
                     env = gym.make(
                         # env_meta["env_name"],
                         args.env_id,
@@ -166,8 +165,10 @@ def train(config, device):
                         squeeze_batch_dim=True,
                         np_step_out=True,
                         render_mode="rgb_array",
+                        # randomness="high_collect",
                     )
-                    env.name = env_meta["env_name"]
+                    # env.name = env_meta["env_name"]
+                    env.name = args.env_id
                     from robomimic.envs.wrappers import FurniturePreprocessWrapper
 
                     env = FurniturePreprocessWrapper(env)
@@ -195,7 +196,6 @@ def train(config, device):
 
             envs[env_name] = env
             print(env)
-
     print("")
 
     # setup for a new training run

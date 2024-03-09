@@ -20,7 +20,8 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
     def __init__(self, **kwargs):
         super().__init__(
             furniture=kwargs["furniture"],
-            randomness="low",
+            # randomness="low",
+            randomness="high_collect",
             abs_action=kwargs["abs_action"],
             act_rot_repr=kwargs["act_rot_repr"],
         )
