@@ -98,7 +98,7 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
     )
     active_acous_sensor.streaming()
 
-    print("********", shm)
+    # print("********", shm)
     print("Active acoustic sensor initialized")
 
     cam1_to_base = None
