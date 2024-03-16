@@ -94,12 +94,14 @@ def main():
             # "gripper_width" -> "robot0_gripper_qpos"
             # "color_image1"  -> "robot0_eye_in_hand_image"
             # "color_image2"  -> "agentview_image"
+            # "active_acous"  -> "active_acous"
             obs["object"] = obs["parts_poses"]
             obs["robot0_eef_pos"] = obs["ee_pos"]
             obs["robot0_eef_quat"] = obs["ee_quat"]
             obs["robot0_gripper_qpos"] = np.array(obs["gripper_width"]).reshape(-1, 1) # Add a dimension since squeezed in data saving.
             obs["robot0_eye_in_hand_image"] = obs["color_image1"]
             obs["agentview_image"] = obs["color_image2"]
+            obs["active_acous"] = np.expand_dims(obs["active_acous"], axis=1) # SL: active_acous, add a dimension 
             del obs["parts_poses"]
             del obs["ee_pos"]
             del obs["ee_quat"]

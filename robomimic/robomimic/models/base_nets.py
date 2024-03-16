@@ -935,20 +935,26 @@ class Conv1dBase(Module):
         self,
         input_channel=1,
         activation="relu",
-        out_channels=(32, 64, 64),
-        kernel_size=(8, 4, 2),
+        # out_channels=(32, 64, 64),
+        # kernel_size=(8, 4, 2),
         stride=(4, 2, 1),
         **conv_kwargs,
     ):
         super(Conv1dBase, self).__init__()
 
+        # print("&"*20, conv_kwargs)
         # Get activation requested
         activation = CONV_ACTIVATIONS[activation]
 
         # Generate network
+        out_channels = conv_kwargs["out_channels"] 
+        kernel_size = conv_kwargs["kernel_size"]
+        # print("#"*20, out_channels) 
+        # print("#"*20, kernel_size) 
         self.n_layers = len(out_channels)
         layers = OrderedDict()
         for i in range(self.n_layers):
+            # print("!"*20, conv_kwargs.items())
             layer_kwargs = {k: v[i] for k, v in conv_kwargs.items()}
             layers[f'conv{i}'] = nn.Conv1d(
                 in_channels=input_channel,
@@ -960,6 +966,7 @@ class Conv1dBase(Module):
 
         # Store network
         self.nets = nn.Sequential(layers)
+        # print("^"*20, self.nets)
 
     def output_shape(self, input_shape):
         """
@@ -973,6 +980,7 @@ class Conv1dBase(Module):
         Returns:
             out_shape ([int]): list of integers corresponding to output shape
         """
+        # input_shape = (1, 4410)  # SL added, edit later
         channels, length = input_shape
         for i in range(self.n_layers):
             net = getattr(self.nets, f"conv{i}")
