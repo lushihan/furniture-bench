@@ -13,6 +13,7 @@ from furniture_bench.perception.realsense import RealsenseCam
 from furniture_bench.utils.pose import comp_avg_pose
 from furniture_bench.perception.realsense import read_detect
 from furniture_bench.config import config
+from furniture_bench.perception.actuator_mic_controller_callback import ActiveAcousticSensor
 
 
 def get_cam_to_base(cam=None, cam_num=-1, img=None, cam_intr=None, april_tag=None):
@@ -90,6 +91,16 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
     )
     print("Camera initialized")
 
+    active_acous_sensor = ActiveAcousticSensor(
+        sample_rate=44100, 
+        frame_rate=10, 
+        excitation_mode='exponential',
+    )
+    active_acous_sensor.streaming()
+
+    # print("********", shm)
+    print("Active acoustic sensor initialized")
+
     cam1_to_base = None
     cam2_to_base = get_cam_to_base(cam2, 2)
     cam3_to_base = get_cam_to_base(cam3, 3)
@@ -116,6 +127,7 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
             cam1_to_base,
             cam2_to_base,
             cam3_to_base,
+            active_acous_sensor,
         )
         parts_poses_shm = shared_memory.SharedMemory(name=shm[0])
         parts_founds_shm = shared_memory.SharedMemory(name=shm[1])
@@ -125,6 +137,7 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         depth_shm2 = shared_memory.SharedMemory(name=shm[5])
         color_shm3 = shared_memory.SharedMemory(name=shm[6])
         depth_shm3 = shared_memory.SharedMemory(name=shm[7])
+        active_acous_shm = shared_memory.SharedMemory(name=shm[8])
 
         parts_poses = np.ndarray(
             shape=(num_parts * 7,), dtype=np.float32, buffer=parts_poses_shm.buf
@@ -150,6 +163,9 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         depth_img3 = np.ndarray(
             shape=depth_shape, dtype=np.uint16, buffer=depth_shm3.buf
         )
+        active_acous = np.ndarray(
+            shape=(1, 4410), dtype=np.float32, buffer=active_acous_shm.buf
+        )
 
         lock.acquire()
         parts_poses[:] = detection[0]
@@ -160,6 +176,7 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         depth_img2[:] = detection[5]
         color_img3[:] = detection[6]
         depth_img3[:] = detection[7]
+        active_acous[:] = detection[8]
         lock.release()
 
 
@@ -174,6 +191,7 @@ def _get_parts_poses(
     cam1_to_base,
     cam2_to_base,
     cam3_to_base,
+    active_acous_sensor,
 ):
     """
     Args:
@@ -198,6 +216,8 @@ def _get_parts_poses(
         tags2,
         tags3,
     ) = read_detect(april_tag, cam1, cam2, cam3)
+
+    active_acous_data = active_acous_sensor.get_window() # active acous    
 
     for part in parts:
         part_idx = part.part_idx
@@ -263,6 +283,7 @@ def _get_parts_poses(
         depth_img2,
         color_img3,
         depth_img3,
+        active_acous_data,
     )
 
 

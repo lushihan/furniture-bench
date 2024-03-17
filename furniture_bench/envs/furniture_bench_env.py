@@ -184,6 +184,7 @@ class FurnitureBenchEnv(gym.Env):
                     high=high,
                     shape=(self.furniture.num_parts * self.pose_dim,),
                 ),
+                "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
             }
         )
 
@@ -275,6 +276,7 @@ class FurnitureBenchEnv(gym.Env):
             depth_img2,
             color_img3,
             depth_img3,
+            active_acous,
         ) = self.furniture.get_parts_poses()
         img = cv2.cvtColor(np.hstack([color_img1, color_img2]), cv2.COLOR_RGB2BGR)
 
@@ -345,6 +347,7 @@ class FurnitureBenchEnv(gym.Env):
                 color_image3=color_img3,
                 depth_image3=depth_img3,
                 parts_poses=parts_poses,
+                active_acous=active_acous,
             ),
             PandaError.OK,
         )

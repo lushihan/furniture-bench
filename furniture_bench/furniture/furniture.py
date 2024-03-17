@@ -182,18 +182,18 @@ class Furniture(ABC):
         self,
     ) -> Tuple[npt.NDArray[np.float32], npt.NDArray[np.bool_]]:
         """Get parts poses and founds only."""
-        parts_poses, founds, _, _, _, _, _, _ = self.get_parts_poses()
+        parts_poses, founds, _, _, _, _, _, _, _ = self.get_parts_poses()
         return parts_poses, founds
 
     def get_front_image(self) -> npt.NDArray[np.uint8]:
         """Get front image of the furniture only."""
-        _, _, color_image1, _, _, _, _, _ = self.get_parts_poses()
+        _, _, color_image1, _, _, _, _, _, _ = self.get_parts_poses()
         return color_image1
 
     def get_part_pose(self, part_idx):
         max_trial = 5
         for _ in range(max_trial):
-            parts_poses, _, _, _, _, _, _, _ = self.get_parts_poses()
+            parts_poses, _, _, _, _, _, _, _, _ = self.get_parts_poses()
             part_pose = parts_poses[part_idx * 7 : (1 + part_idx) * 7]
             if np.isclose(part_pose, np.zeros((7,))).all():
                 time.sleep(0.2)
@@ -253,8 +253,9 @@ class Furniture(ABC):
         npt.NDArray[np.uint16],
         npt.NDArray[np.uint8],
         npt.NDArray[np.uint16],
+        npt.NDArray[np.float32] # active acous
     ]:
-        """Get the shared memory of parts poses and images."""
+        """Get the shared memory of parts poses and images, and active acous."""
         parts_poses_shm = shared_memory.SharedMemory(name=self.shm[0])
         parts_founds_shm = shared_memory.SharedMemory(name=self.shm[1])
         color_shm1 = shared_memory.SharedMemory(name=self.shm[2])
@@ -263,6 +264,7 @@ class Furniture(ABC):
         depth_shm2 = shared_memory.SharedMemory(name=self.shm[5])
         color_shm3 = shared_memory.SharedMemory(name=self.shm[6])
         depth_shm3 = shared_memory.SharedMemory(name=self.shm[7])
+        active_acous_shm = shared_memory.SharedMemory(name=self.shm[8])
 
         parts_poses = np.ndarray(
             shape=(self.num_parts * 7,), dtype=np.float32, buffer=parts_poses_shm.buf
@@ -288,6 +290,9 @@ class Furniture(ABC):
         depth_img3 = np.ndarray(
             shape=self.depth_shape, dtype=np.uint16, buffer=depth_shm3.buf
         )
+        active_acous = np.ndarray(
+            shape=(1, 4410), dtype=np.float32, buffer=active_acous_shm.buf
+        )
 
         return (
             parts_poses.copy(),
@@ -298,10 +303,11 @@ class Furniture(ABC):
             depth_img2.copy(),
             color_img3.copy(),
             depth_img3.copy(),
+            active_acous.copy()
         )
 
-    def create_shared_memory(self) -> Tuple[str, str, str, str, str, str, str, str]:
-        """Create shared memory to save the parts poses and images."""
+    def create_shared_memory(self) -> Tuple[str, str, str, str, str, str, str, str, str]:
+        """Create shared memory to save the parts poses and images, and active acous."""
         parts_poses = np.zeros(shape=(self.num_parts * 7,), dtype=np.float32)
         parts_poses_shm = shared_memory.SharedMemory(
             create=True, size=parts_poses.nbytes
@@ -316,6 +322,10 @@ class Furniture(ABC):
         color_shm2, depth_shm2 = self._create_shared_memory_for_img()
         color_shm3, depth_shm3 = self._create_shared_memory_for_img()
 
+        active_acous_shm = shared_memory.SharedMemory(
+            create=True, size=np.zeros(shape=(1, 4410), dtype=np.float32).nbytes
+        )
+
         return (
             parts_poses_shm.name,
             parts_founds_shm.name,
@@ -325,6 +335,7 @@ class Furniture(ABC):
             depth_shm2.name,
             color_shm3.name,
             depth_shm3.name,
+            active_acous_shm.name
         )
 
     def _create_shared_memory_for_img(self):
