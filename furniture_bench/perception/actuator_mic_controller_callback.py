@@ -198,8 +198,8 @@ class ActiveAcousticSensor(object):
 
     def get_specgram(self, signal, rate):
         arr2D, freqs, bins = specgram(signal, window=window_hanning,
-                                Fs=rate, NFFT=1024,
-                                noverlap=1000)
+                                Fs=rate, NFFT=256,
+                                noverlap=128)
         return arr2D,freqs,bins
 
     def get_fft(self):
@@ -213,10 +213,11 @@ class ActiveAcousticSensor(object):
         _signal = numpy.squeeze(raw_signal, axis=0)
         signal_fft = numpy.abs(rfft(_signal))
         arr2D, _, _ = specgram(_signal, window=window_hanning,
-                        Fs=self.sample_rate, NFFT=1024,
-                        noverlap=1012)
+                        Fs=self.sample_rate, NFFT=256,
+                        noverlap=128)
         return raw_signal, numpy.expand_dims(signal_fft, axis=0), numpy.expand_dims(arr2D, axis=2)  
         # return print(numpy.shape(raw_signal)), print(numpy.shape(numpy.expand_dims(signal_fft, axis=0))), print(numpy.shape(numpy.expand_dims(arr2D, axis=0))) 
+        # return print(raw_signal), print(numpy.expand_dims(signal_fft, axis=0)), print(numpy.expand_dims(arr2D, axis=0)) 
 
     def save_buffer(self):
         pass
@@ -233,7 +234,7 @@ class ActiveAcousticSensor(object):
         self.close()
 
 def read_detect_active_acous(activeAcous: ActiveAcousticSensor):
-    return activeAcous.get_output()  # time domain now, may change to freq domain
+    return activeAcous.get_output()  # raw signal, fft, spectrogram
 
 def play_sound():  # add parameters
 
