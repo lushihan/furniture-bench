@@ -15,6 +15,8 @@ FULL_OBS = [
     "depth_image3",
     "parts_poses",
     "active_acous",
+    "active_acous_fft",
+    "active_acous_spec",
 ]
 
 DEFAULT_VISUAL_OBS = [
@@ -26,6 +28,8 @@ DEFAULT_VISUAL_OBS = [
     "color_image1",
     "color_image2",
     "active_acous",
+    "active_acous_fft",
+    "active_acous_spec",
 ]
 
 DEFAULT_STATE_OBS = [

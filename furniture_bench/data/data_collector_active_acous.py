@@ -148,6 +148,8 @@ class DataCollector:
                 n_ob["color_image1"] = resize(next_obs["color_image1"])
                 n_ob["color_image2"] = resize_crop(next_obs["color_image2"])
                 n_ob["active_acous"] = next_obs["active_acous"]
+                n_ob["active_acous_fft"] = next_obs["active_acous_fft"]
+                n_ob["active_acous_spec"] = next_obs["active_acous_spec"]
                 n_ob["robot_state"] = next_obs["robot_state"]
                 n_ob["parts_poses"] = next_obs["parts_poses"]
                 self.obs.append(n_ob)
@@ -226,6 +228,8 @@ class DataCollector:
                     ob["color_image1"] = obs["color_image1"]
                     ob["color_image2"] = obs["color_image2"]
                 ob["active_acous"] = obs["active_acous"]
+                ob["active_acous_fft"] = obs["active_acous_fft"]
+                ob["active_acous_spec"] = obs["active_acous_spec"]
                 ob["robot_state"] = obs["robot_state"]
                 ob["parts_poses"] = obs["parts_poses"]
                 self.obs.append(ob)

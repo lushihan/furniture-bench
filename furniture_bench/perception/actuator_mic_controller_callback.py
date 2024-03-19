@@ -194,9 +194,35 @@ class ActiveAcousticSensor(object):
 
     def get_specgram(self, signal, rate):
         arr2D, freqs, bins = specgram(signal, window=window_hanning,
-                                Fs=rate, NFFT=1024,
-                                noverlap=1000)
+                                Fs=rate, NFFT=256,
+                                noverlap=192)
         return arr2D,freqs,bins
+
+    def get_fft(self):
+        signal = numpy.squeeze(self.get_window(), axis=0)
+        yf = rfft(signal)
+        # xf = rfftfreq(len(signal), 1 / self.sample_rate)
+        return numpy.abs(yf) #, print(xf)
+
+    def get_output(self):
+        """
+        raw_signal: (1, length of sequence) 
+        signal_fft: (1, length of sequence / 2 + 1)
+        arr2D: (num of freq bins, time stamps, 1)
+        """
+        raw_signal = self.get_window()
+        # _signal = numpy.squeeze(raw_signal, axis=0)
+        signal_fft = numpy.abs(rfft(raw_signal))
+        arr2D, _, _ = specgram(raw_signal, window=window_hanning,
+                        Fs=self.sample_rate, NFFT=256,
+                        noverlap=192)
+        return (
+            numpy.expand_dims(raw_signal, axis=0), 
+            numpy.expand_dims(signal_fft, axis=0), 
+            numpy.expand_dims(arr2D, axis=2)
+            )
+        # return print(numpy.shape(numpy.expand_dims(raw_signal, axis=0))), print(numpy.shape(numpy.expand_dims(signal_fft, axis=0))), print(numpy.shape(numpy.expand_dims(arr2D, axis=2))) 
+        # return print(numpy.expand_dims(raw_signal, axis=0)), print(numpy.expand_dims(signal_fft, axis=0)), print(numpy.expand_dims(arr2D, axis=2))     
 
     def save_buffer(self):
         pass
@@ -213,7 +239,7 @@ class ActiveAcousticSensor(object):
         self.close()
 
 def read_detect_active_acous(activeAcous: ActiveAcousticSensor):
-    return activeAcous.get_window()  # time domain now, may change to freq domain
+    return activeAcous.get_output()  # (raw signal, fft, spectrogram)
 
 def play_sound():  # add parameters
 
@@ -371,7 +397,8 @@ if __name__=="__main__":
     activeAcoustic.streaming()
     # activeAcoustic.visualize_input()
     activeAcoustic.visualize_spectrogram()
-    activeAcoustic.get_window()
+    # activeAcoustic.get_window()
+    read_detect_active_acous(activeAcoustic)
 
     # while activeAcoustic.is_streaming():
         # print(activeAcoustic.get_window())

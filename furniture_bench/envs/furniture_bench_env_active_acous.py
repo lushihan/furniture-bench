@@ -175,7 +175,9 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
                     high=high,
                     shape=(self.furniture.num_parts * self.pose_dim,),
                 ),
-                "active_acous": gym.spaces.Box(low=0, high=1, shape=(4410,)), ## edit shape later
+                "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit shape later
+                "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
+                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
             }
         )
 
@@ -264,6 +266,8 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
             color_img3,
             depth_img3,
             active_acous,
+            active_acous_fft,
+            active_acous_spec,
         ) = self.furniture.get_parts_poses()
         img = cv2.cvtColor(np.hstack([color_img1, color_img2]), cv2.COLOR_RGB2BGR)
 
@@ -315,15 +319,16 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
             cv2.waitKey(1)
           
             # visualize active acous
-            # print(active_acous)
-            active_acous_spec, _, _ = specgram(active_acous, 
-                window=window_hanning, 
-                Fs=44100, 
-                NFFT=1024,
-                noverlap=1000)
-            active_acous_spec_normal = np.zeros(np.shape(active_acous_spec))
-            active_acous_spec_normal = cv2.normalize(active_acous_spec, active_acous_spec_normal, 0, 255, cv2.NORM_MINMAX)
-            cv2.imshow("Active acous spec", active_acous_spec_normal)
+            # print(active_acous_spec)
+            # active_acous_spec_vis, _, _ = specgram(np.squeeze(active_acous, axis=0), 
+            #     window=window_hanning, 
+            #     Fs=44100, 
+            #     NFFT=256,
+            #     noverlap=192)
+            active_acous_spec_vis = np.squeeze(active_acous_spec, axis=2)
+            active_acous_spec_normal = np.zeros(np.shape(active_acous_spec_vis))
+            active_acous_spec_normal = cv2.normalize(active_acous_spec_vis, active_acous_spec_normal, 0, 255, cv2.NORM_MINMAX)
+            cv2.imshow("Active acous spectrogram", active_acous_spec_normal)
             cv2.waitKey(1)
 
             if self.record:
@@ -348,13 +353,15 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
                 depth_image3=depth_img3,
                 parts_poses=parts_poses,
                 active_acous=active_acous, # add active acous data and make sure the key is "active acous" in dict
+                active_acous_fft=active_acous_fft, # key name matters here
+                active_acous_spec=active_acous_spec, # key name matters here
             ),
             PandaError.OK,
         )
 
     def _visualize_init_pose(self, draw=True, from_skill=0):
         """Visualizes the pre-defined initial states."""
-        part_poses, _, _, _, img2, _, img3, _ = self.furniture.get_parts_poses()
+        part_poses, _, _, _, img2, _, img3, _, _, _, _ = self.furniture.get_parts_poses()
 
         def _draw(part, draw_img, base, intr):
             reset_pose = np.linalg.inv(base) @ T.to_homogeneous(
