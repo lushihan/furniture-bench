@@ -49,20 +49,28 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 "gripper_width": gym.spaces.Box(low=low, high=high, shape=(1,)),
                 "color_image1": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
                 "color_image2": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
-                "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
+                # "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
+                # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
+                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
             }
         )
 
     def _get_observation(self):
         """If successful, returns (obs, True); otherwise, returns (None, False)."""
         robot_state, panda_error = self.robot.get_state()
-        _, _, image1, _, image2, _, _, _, active_acous = self.furniture.get_parts_poses()
+        _, _, image1, _, image2, _, _, _, _, _, active_acous_spec = self.furniture.get_parts_poses()
 
         image1 = resize(image1)
         image2 = resize_crop(image2)
 
         return (
-            dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),
+            # dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),
+            dict(
+                robot_state.__dict__, 
+                color_image1=image1, 
+                color_image2=image2, 
+                active_acous_spec=active_acous_spec
+                ), # key name matters
             panda_error,
         )
 

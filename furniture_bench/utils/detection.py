@@ -14,7 +14,7 @@ from furniture_bench.utils.pose import comp_avg_pose
 from furniture_bench.perception.realsense import read_detect
 from furniture_bench.config import config
 from furniture_bench.perception.actuator_mic_controller_callback import ActiveAcousticSensor
-
+from furniture_bench.perception.actuator_mic_controller_callback import read_detect_active_acous
 
 def get_cam_to_base(cam=None, cam_num=-1, img=None, cam_intr=None, april_tag=None):
     """Get homogeneous transforms that maps camera points to base points."""
@@ -138,6 +138,8 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         color_shm3 = shared_memory.SharedMemory(name=shm[6])
         depth_shm3 = shared_memory.SharedMemory(name=shm[7])
         active_acous_shm = shared_memory.SharedMemory(name=shm[8])
+        active_acous_fft_shm = shared_memory.SharedMemory(name=shm[9])
+        active_acous_spec_shm = shared_memory.SharedMemory(name=shm[10])
 
         parts_poses = np.ndarray(
             shape=(num_parts * 7,), dtype=np.float32, buffer=parts_poses_shm.buf
@@ -166,6 +168,12 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         active_acous = np.ndarray(
             shape=(1, 4410), dtype=np.float32, buffer=active_acous_shm.buf
         )
+        active_acous_fft = np.ndarray(
+            shape=(1, 2206), dtype=np.float32, buffer=active_acous_fft_shm.buf
+        )        
+        active_acous_spec = np.ndarray(
+            shape=(129, 65, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
+        )
 
         lock.acquire()
         parts_poses[:] = detection[0]
@@ -177,6 +185,8 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         color_img3[:] = detection[6]
         depth_img3[:] = detection[7]
         active_acous[:] = detection[8]
+        active_acous_fft[:] = detection[9]
+        active_acous_spec[:] = detection[10]        
         lock.release()
 
 
@@ -217,7 +227,12 @@ def _get_parts_poses(
         tags3,
     ) = read_detect(april_tag, cam1, cam2, cam3)
 
-    active_acous_data = active_acous_sensor.get_window() # active acous    
+    # active_acous_data = active_acous_sensor.get_window() # active acous    
+    (
+        active_acous_data, 
+        active_acous_fft_data, 
+        active_acous_spec_data,
+    ) = read_detect_active_acous(active_acous_sensor)
 
     for part in parts:
         part_idx = part.part_idx
@@ -284,6 +299,8 @@ def _get_parts_poses(
         color_img3,
         depth_img3,
         active_acous_data,
+        active_acous_fft_data,
+        active_acous_spec_data
     )
 
 

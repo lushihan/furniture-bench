@@ -101,13 +101,21 @@ def main():
             obs["robot0_gripper_qpos"] = np.array(obs["gripper_width"]).reshape(-1, 1) # Add a dimension since squeezed in data saving.
             obs["robot0_eye_in_hand_image"] = obs["color_image1"]
             obs["agentview_image"] = obs["color_image2"]
-            obs["active_acous"] = np.expand_dims(obs["active_acous"], axis=1) # SL: active_acous, add a dimension 
+            # obs["active_acous"] = np.expand_dims(obs["active_acous"], axis=1) # SL: active_acous, add a dimension
+            obs["active_acous"] = obs["active_acous"] # active_acous
+            obs["active_acous_fft"] = obs["active_acous_fft"]
+            obs["active_acous_spec"] = obs["active_acous_spec"]
+
             del obs["parts_poses"]
             del obs["ee_pos"]
             del obs["ee_quat"]
             del obs["gripper_width"]
             del obs["color_image1"]
             del obs["color_image2"]
+
+            # del active acous modalities that are not used
+            # del obs["active_acous"]
+            # del obs["active_acous_fft"]
 
             for k in obs:
                 demo_group.create_dataset("obs/{}".format(k), data=np.array(obs[k]))

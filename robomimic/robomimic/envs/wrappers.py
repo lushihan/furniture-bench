@@ -260,7 +260,8 @@ class FurniturePreprocessWrapper(EnvWrapper):
         ### YW
         ob_dict["robot0_eye_in_hand_image"] = ob_dict["color_image1"]
         ob_dict["agentview_image"] = ob_dict["color_image2"]
-        ob_dict["active_acous"] = ob_dict["active_acous"]
+        # ob_dict["active_acous"] = ob_dict["active_acous"]
+        ob_dict["active_acous_spec"] = ob_dict["active_acous_spec"]
 
 
         for k in ob_dict:

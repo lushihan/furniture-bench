@@ -107,7 +107,8 @@ class ActiveAcousticSensor(object):
             return numpy.vstack(self.channels * [numpy.float64(librosa.core.chirp(20, 10000, self.sample_rate, duration=float(1 / self.frame_rate)))]).T      
 
     def get_window(self): # double check the shape of window
-        return numpy.expand_dims(self.current_frame, axis=0)
+        return self.current_frame
+        # return numpy.expand_dims(self.current_frame, axis=0)
         # return print(numpy.shape(numpy.expand_dims(self.current_frame, axis=1)))
 
     def get_window_size(self):
@@ -141,25 +142,6 @@ class ActiveAcousticSensor(object):
         for column, line in enumerate(self.lines):
             line.set_ydata(self.plotdata[:, column])
         return self.lines
-
-    # def update_fig_spectrogram(self, n):
-    #     while True:
-    #         try:
-    #             data = self.q.get_nowait()
-    #         except queue.Empty:
-    #             break
-    #         arr2D, freqs, bins = self.get_specgram(data, self.sample_rate)
-    #         # print(arr2D)
-    #         im_data = self.im.get_array()
-    #         if n < self.SAMPLES_PER_FRAME:
-    #             im_data = numpy.hstack((im_data, arr2D))
-    #             self.im.set_array(im_data)
-    #         else:
-    #             keep_block = arr2D.shape[1] * (self.SAMPLES_PER_FRAME - 1)
-    #             im_data = numpy.delete(im_data, numpy.s_[:-keep_block], 1)
-    #             im_data = numpy.hstack((im_data, arr2D))
-    #             self.im.set_array(im_data)
-    #     return self.im,
 
     def update_fig_spectrogram(self, n):
         while True:
@@ -199,23 +181,32 @@ class ActiveAcousticSensor(object):
     def get_specgram(self, signal, rate):
         arr2D, freqs, bins = specgram(signal, window=window_hanning,
                                 Fs=rate, NFFT=256,
-                                noverlap=128)
+                                noverlap=192)
         return arr2D,freqs,bins
 
     def get_fft(self):
-        signal = numpy.squeeze(self.get_window(), axis=0)
+        signal = self.get_window()
         yf = rfft(signal)
         # xf = rfftfreq(len(signal), 1 / self.sample_rate)
         return numpy.abs(yf) #, print(xf)
 
     def get_output(self):
+        """
+        raw_signal: (1, length of sequence) 
+        signal_fft: (1, length of sequence / 2 + 1)
+        arr2D: (num of freq bins, time stamps, 1)
+        """
         raw_signal = self.get_window()
-        _signal = numpy.squeeze(raw_signal, axis=0)
-        signal_fft = numpy.abs(rfft(_signal))
-        arr2D, _, _ = specgram(_signal, window=window_hanning,
+        # _signal = numpy.squeeze(raw_signal, axis=0)
+        signal_fft = numpy.abs(rfft(raw_signal))
+        arr2D, _, _ = specgram(raw_signal, window=window_hanning,
                         Fs=self.sample_rate, NFFT=256,
-                        noverlap=128)
-        return raw_signal, numpy.expand_dims(signal_fft, axis=0), numpy.expand_dims(arr2D, axis=2)  
+                        noverlap=192)
+        return (
+            numpy.expand_dims(raw_signal, axis=0), 
+            numpy.expand_dims(signal_fft, axis=0), 
+            numpy.expand_dims(arr2D, axis=2)
+            )
         # return print(numpy.shape(raw_signal)), print(numpy.shape(numpy.expand_dims(signal_fft, axis=0))), print(numpy.shape(numpy.expand_dims(arr2D, axis=0))) 
         # return print(raw_signal), print(numpy.expand_dims(signal_fft, axis=0)), print(numpy.expand_dims(arr2D, axis=0)) 
 
@@ -234,7 +225,7 @@ class ActiveAcousticSensor(object):
         self.close()
 
 def read_detect_active_acous(activeAcous: ActiveAcousticSensor):
-    return activeAcous.get_output()  # raw signal, fft, spectrogram
+    return activeAcous.get_output()  # (raw signal, fft, spectrogram)
 
 def play_sound():  # add parameters
 
@@ -393,7 +384,8 @@ if __name__=="__main__":
     # activeAcoustic.visualize_input()
     activeAcoustic.visualize_spectrogram()
     # activeAcoustic.get_window()
-    activeAcoustic.get_output()
+    # activeAcoustic.get_output()
+    read_detect_active_acous(activeAcoustic)
 
     # while activeAcoustic.is_streaming():
         # print(activeAcoustic.get_window())
