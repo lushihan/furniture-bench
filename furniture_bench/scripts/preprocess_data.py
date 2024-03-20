@@ -180,7 +180,7 @@ def main():
 
             # Make it channel first.
             for o in new_traj["observations"]:
-                for img in ["color_image1", "color_image2"]:
+                for img in ["color_image1", "color_image2", "active_acous_spec"]:
                     o[img] = np.moveaxis(o[img], -1, 0)
 
             if args.use_all_cam:
@@ -190,6 +190,9 @@ def main():
                         "color_image1": o["color_image1"],  # Camera 1 image
                         "color_image2": o["color_image2"],  # Camera 2 image
                         "color_image3": o["color_image3"],  # Camera 3 image
+                        "active_acous": o["active_acous"],  
+                        "active_acous_fft": o["active_acous_fft"],
+                        "active_acous_spec": o["active_acous_spec"],
                         "robot_state": filter_and_concat_robot_state(o["robot_state"]),
                     }
                     for o in new_traj["observations"]
@@ -199,6 +202,9 @@ def main():
                     {
                         "color_image1": o["color_image1"],  # Wrist cam
                         "color_image2": o["color_image2"],  # Front cam
+                        "active_acous": o["active_acous"],  
+                        "active_acous_fft": o["active_acous_fft"],
+                        "active_acous_spec": o["active_acous_spec"],
                         "robot_state": filter_and_concat_robot_state(o["robot_state"]),
                     }
                     for o in new_traj["observations"]
