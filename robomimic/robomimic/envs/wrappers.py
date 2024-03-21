@@ -265,7 +265,7 @@ class FurniturePreprocessWrapper(EnvWrapper):
 
 
         for k in ob_dict:
-            if (k in ObsUtils.OBS_KEYS_TO_MODALITIES) and ObsUtils.key_is_obs_modality(key=k, obs_modality="rgb"):
+            if (k in ObsUtils.OBS_KEYS_TO_MODALITIES) and (ObsUtils.key_is_obs_modality(key=k, obs_modality="rgb") or ObsUtils.key_is_obs_modality(key=k, obs_modality="depth")): #??
                 ob_dict[k] = ObsUtils.process_obs(obs=ob_dict[k], obs_key=k)
         return ob_dict
 
