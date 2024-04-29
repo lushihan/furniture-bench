@@ -104,7 +104,9 @@ def main():
             # obs["active_acous"] = np.expand_dims(obs["active_acous"], axis=1) # SL: active_acous, add a dimension
             obs["active_acous"] = obs["active_acous"] # active_acous
             obs["active_acous_fft"] = obs["active_acous_fft"]
-            obs["active_acous_spec"] = obs["active_acous_spec"]
+            # obs["active_acous_spec"] = obs["active_acous_spec"]
+            obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58] # cropped
+            # print(np.shape(obs["active_acous_spec"]))
 
             del obs["parts_poses"]
             del obs["ee_pos"]
