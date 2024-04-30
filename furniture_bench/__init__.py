@@ -74,3 +74,9 @@ register(
     id="FurnitureBench-v1",
     entry_point="furniture_bench.envs.furniture_bench_env_active_acous:FurnitureBenchEnvActiveAcous",
 )
+
+# FurnitureBench environment with full observation plus tactile image.
+register(
+    id="FurnitureBench-v2",
+    entry_point="furniture_bench.envs.furniture_bench_env_tactile_image:FurnitureBenchEnvTactileImage",
+)
