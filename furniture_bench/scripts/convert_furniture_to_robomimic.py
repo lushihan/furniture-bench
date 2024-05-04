@@ -105,7 +105,7 @@ def main():
             obs["active_acous"] = obs["active_acous"] # active_acous
             obs["active_acous_fft"] = obs["active_acous_fft"]
             # obs["active_acous_spec"] = obs["active_acous_spec"]
-            obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58] # cropped
+            obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
             # print(np.shape(obs["active_acous_spec"]))
 
             del obs["parts_poses"]
