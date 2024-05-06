@@ -184,9 +184,10 @@ class FurnitureBenchEnv(gym.Env):
                     high=high,
                     shape=(self.furniture.num_parts * self.pose_dim,),
                 ),
-                "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
-                "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
-                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),                
+                # "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
+                # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
+                # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),  
+                "tactile_image": gym.spaces.Box(low=0, high=255, shape=(320, 240, 3)),              
             }
         )
 
@@ -278,9 +279,10 @@ class FurnitureBenchEnv(gym.Env):
             depth_img2,
             color_img3,
             depth_img3,
-            active_acous,
-            active_acous_fft,
-            active_acous_spec,
+            # active_acous,
+            # active_acous_fft,
+            # active_acous_spec,
+            tactile_image,
         ) = self.furniture.get_parts_poses()
         img = cv2.cvtColor(np.hstack([color_img1, color_img2]), cv2.COLOR_RGB2BGR)
 
@@ -351,16 +353,17 @@ class FurnitureBenchEnv(gym.Env):
                 color_image3=color_img3,
                 depth_image3=depth_img3,
                 parts_poses=parts_poses,
-                active_acous=active_acous,
-                active_acous_fft=active_acous_fft,
-                active_acous_spec=active_acous_spec,
+                # active_acous=active_acous,
+                # active_acous_fft=active_acous_fft,
+                # active_acous_spec=active_acous_spec,
+                tactile_image=tactile_image,
             ), # key name matters
             PandaError.OK,
         )
 
     def _visualize_init_pose(self, draw=True, from_skill=0):
         """Visualizes the pre-defined initial states."""
-        part_poses, _, _, _, img2, _, img3, _, _, _, _ = self.furniture.get_parts_poses()
+        part_poses, _, _, _, img2, _, img3, _, _ = self.furniture.get_parts_poses()
 
         def _draw(part, draw_img, base, intr):
             reset_pose = np.linalg.inv(base) @ T.to_homogeneous(

@@ -95,18 +95,21 @@ def main():
             # "color_image1"  -> "robot0_eye_in_hand_image"
             # "color_image2"  -> "agentview_image"
             # "active_acous"  -> "active_acous"
+            # "tactile_image" -> "tactile_image"
             obs["object"] = obs["parts_poses"]
             obs["robot0_eef_pos"] = obs["ee_pos"]
             obs["robot0_eef_quat"] = obs["ee_quat"]
             obs["robot0_gripper_qpos"] = np.array(obs["gripper_width"]).reshape(-1, 1) # Add a dimension since squeezed in data saving.
             obs["robot0_eye_in_hand_image"] = obs["color_image1"]
             obs["agentview_image"] = obs["color_image2"]
-            # obs["active_acous"] = np.expand_dims(obs["active_acous"], axis=1) # SL: active_acous, add a dimension
-            obs["active_acous"] = obs["active_acous"] # active_acous
-            obs["active_acous_fft"] = obs["active_acous_fft"]
-            # obs["active_acous_spec"] = obs["active_acous_spec"]
-            obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
-            # print(np.shape(obs["active_acous_spec"]))
+            # # obs["active_acous"] = np.expand_dims(obs["active_acous"], axis=1) # SL: active_acous, add a dimension
+            # obs["active_acous"] = obs["active_acous"] # active_acous
+            # obs["active_acous_fft"] = obs["active_acous_fft"]
+            # # obs["active_acous_spec"] = obs["active_acous_spec"]
+            # obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
+            # # print(np.shape(obs["active_acous_spec"]))
+
+            obs["tactile_image"] = obs["tactile_image"]
 
             del obs["parts_poses"]
             del obs["ee_pos"]

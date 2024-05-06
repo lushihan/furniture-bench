@@ -259,11 +259,12 @@ class FurniturePreprocessWrapper(EnvWrapper):
         ob_dict["robot0_gripper_qpos"] = ob_dict["gripper_width"]
         ### YW
         ob_dict["robot0_eye_in_hand_image"] = ob_dict["color_image1"]
-        ob_dict["agentview_image"] = ob_dict["color_image2"]
-        # ob_dict["active_acous"] = ob_dict["active_acous"]
-        ob_dict["active_acous_spec"] = ob_dict["active_acous_spec"]
-        # ob_dict["active_acous_fft"] = ob_dict["active_acous_fft"]
+        # ob_dict["agentview_image"] = ob_dict["color_image2"]
+        # # ob_dict["active_acous"] = ob_dict["active_acous"]
+        # ob_dict["active_acous_spec"] = ob_dict["active_acous_spec"]
+        # # ob_dict["active_acous_fft"] = ob_dict["active_acous_fft"]
 
+        ob_dict["tactile_image"] = ob_dict["tactile_image"]
 
         for k in ob_dict:
             if (k in ObsUtils.OBS_KEYS_TO_MODALITIES) and (ObsUtils.key_is_obs_modality(key=k, obs_modality="rgb") or ObsUtils.key_is_obs_modality(key=k, obs_modality="depth") or ObsUtils.key_is_obs_modality(key=k, obs_modality="scan")): #??

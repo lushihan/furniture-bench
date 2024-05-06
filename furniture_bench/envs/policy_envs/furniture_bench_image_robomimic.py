@@ -15,7 +15,7 @@ from furniture_bench.data.collect_enum import CollectEnum
 
 
 class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
-    """Furniture environment with image observation."""
+    """Furniture environment with image observation and tactile image."""
 
     def __init__(self, **kwargs):
         super().__init__(
@@ -52,21 +52,26 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 # "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
                 # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
-                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 65, 1)), # if spec is cropped to a specific range
+                # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 65, 1)), # if spec is cropped to a specific range
+                "tactile_image": gym.spaces.Box(low=0, high=255, space=(320, 240, 3)),
             }
         )
 
     def _get_observation(self):
         """If successful, returns (obs, True); otherwise, returns (None, False)."""
         robot_state, panda_error = self.robot.get_state()
-        _, _, image1, _, image2, _, _, _, _, _, active_acous_spec = self.furniture.get_parts_poses()
+        # _, _, image1, _, image2, _, _, _, _, _, active_acous_spec = self.furniture.get_parts_poses()
         # _, _, image1, _, image2, _, _, _, _, active_acous_fft, _ = self.furniture.get_parts_poses()
+        _, _, image1, _, image2, _, _, _, tactile_image = self.furniture.get_parts_poses()
 
         image1 = resize(image1)
         image2 = resize_crop(image2)
 
         # crop active acous spec to [3000, 10000] Hz
-        active_acous_spec = active_acous_spec[18:58]
+        # active_acous_spec = active_acous_spec[18:58]
+
+        # tactile image process
+        tactile_image = tactile_image
 
         return (
             # dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),
@@ -74,8 +79,9 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 robot_state.__dict__, 
                 color_image1=image1, 
                 color_image2=image2, 
-                active_acous_spec=active_acous_spec
+                # active_acous_spec=active_acous_spec
                 # active_acous_fft=active_acous_fft
+                tactile_image=tactile_image,
                 ), # key name matters
             panda_error,
         )
