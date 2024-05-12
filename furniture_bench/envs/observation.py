@@ -17,7 +17,8 @@ FULL_OBS = [
     # "active_acous",
     # "active_acous_fft",
     # "active_acous_spec",
-    "tactile_image",
+    # "tactile_image",
+    "force_array",
 ]
 
 DEFAULT_VISUAL_OBS = [
@@ -31,7 +32,8 @@ DEFAULT_VISUAL_OBS = [
     # "active_acous",
     # "active_acous_fft",
     # "active_acous_spec",
-    "tactile_image",
+    # "tactile_image",
+    "force_array",
 ]
 
 DEFAULT_STATE_OBS = [

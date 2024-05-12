@@ -15,7 +15,9 @@ from furniture_bench.perception.realsense import read_detect
 from furniture_bench.config import config
 # from furniture_bench.perception.actuator_mic_controller_callback import ActiveAcousticSensor
 # from furniture_bench.perception.actuator_mic_controller_callback import read_detect_active_acous
-from digit_interface import Digit # pip install digit-interface
+# from digit_interface import Digit # pip install digit-interface
+from furniture_bench.perception.fsr_detection_thread_v3 import FsrReader
+from furniture_bench.perception.fsr_detection_thread_v3 import read_detect_force_array
 
 def get_cam_to_base(cam=None, cam_num=-1, img=None, cam_intr=None, april_tag=None):
     """Get homogeneous transforms that maps camera points to base points."""
@@ -102,9 +104,13 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
     # # print("********", shm)
     # print("Active acoustic sensor initialized")
 
-    tactile_image_sensor = Digit("D20962")
-    tactile_image_sensor.connect()
-    print("Tactile image sensor initialized")
+    # tactile_image_sensor = Digit("D20962")
+    # tactile_image_sensor.connect()
+    # print("Tactile image sensor initialized")
+
+    force_array_sensor = FsrReader('/dev/ttyACM0', 4)
+    time.sleep(3)
+    print("Force array sensor initialized")
 
     cam1_to_base = None
     cam2_to_base = get_cam_to_base(cam2, 2)
@@ -133,7 +139,8 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
             cam2_to_base,
             cam3_to_base,
             # active_acous_sensor,
-            tactile_image_sensor,
+            # tactile_image_sensor,
+            force_array_sensor,
         )
         parts_poses_shm = shared_memory.SharedMemory(name=shm[0])
         parts_founds_shm = shared_memory.SharedMemory(name=shm[1])
@@ -146,7 +153,8 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         # active_acous_shm = shared_memory.SharedMemory(name=shm[8])
         # active_acous_fft_shm = shared_memory.SharedMemory(name=shm[9])
         # active_acous_spec_shm = shared_memory.SharedMemory(name=shm[10])
-        tactile_image_shm = shared_memory.SharedMemory(name=shm[8])
+        # tactile_image_shm = shared_memory.SharedMemory(name=shm[8])
+        force_array_shm = shared_memory.SharedMemory(name=shm[8])
 
         parts_poses = np.ndarray(
             shape=(num_parts * 7,), dtype=np.float32, buffer=parts_poses_shm.buf
@@ -181,8 +189,11 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         # active_acous_spec = np.ndarray(
         #     shape=(129, 65, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
         # )
-        tactile_image = np.ndarray(
-            shape=(320, 240, 3), dtype=np.uint8, buffer=tactile_image_shm.buf
+        # tactile_image = np.ndarray(
+        #     shape=(320, 240, 3), dtype=np.uint8, buffer=tactile_image_shm.buf
+        # )
+        force_array = np.ndarray(
+            shape=(4, 100, 1), dtype=np.uint8, buffer=force_array_shm.buf 
         )
 
         lock.acquire()
@@ -197,7 +208,8 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         # active_acous[:] = detection[8]
         # active_acous_fft[:] = detection[9]
         # active_acous_spec[:] = detection[10]
-        tactile_image[:] = detection[8]
+        # tactile_image[:] = detection[8]
+        force_array[:] = detection[8]
         lock.release()
 
 
@@ -213,7 +225,8 @@ def _get_parts_poses(
     cam2_to_base,
     cam3_to_base,
     # active_acous_sensor,
-    tactile_image_sensor,
+    # tactile_image_sensor,
+    force_array_sensor,
 ):
     """
     Args:
@@ -246,7 +259,9 @@ def _get_parts_poses(
     #     active_acous_spec_data,
     # ) = read_detect_active_acous(active_acous_sensor)
 
-    tactile_image_data = tactile_image_sensor.get_frame()
+    # tactile_image_data = tactile_image_sensor.get_frame()
+
+    force_array_data = read_detect_force_array(force_array_sensor)
 
     for part in parts:
         part_idx = part.part_idx
@@ -315,7 +330,8 @@ def _get_parts_poses(
         # active_acous_data,
         # active_acous_fft_data,
         # active_acous_spec_data
-        tactile_image_data
+        # tactile_image_data
+        force_array_data
     )
 
 

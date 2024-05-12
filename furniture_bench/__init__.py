@@ -80,3 +80,9 @@ register(
     id="FurnitureBench-v2",
     entry_point="furniture_bench.envs.furniture_bench_env_tactile_image:FurnitureBenchEnvTactileImage",
 )
+
+# FurnitureBench environment with full observation plus contact force array.
+register(
+    id="FurnitureBench-v3",
+    entry_point="furniture_bench.envs.furniture_bench_env_force_array:FurnitureBenchEnvForceArray",
+)
