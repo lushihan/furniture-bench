@@ -53,6 +53,8 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
                 "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 65, 1)), # if spec is cropped to a specific range
+                # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 33, 1)), # if spec is cropped to a specific range and stepped in time
+
             }
         )
 
@@ -66,7 +68,8 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         image2 = resize_crop(image2)
 
         # crop active acous spec to [3000, 10000] Hz
-        active_acous_spec = active_acous_spec[18:58]
+        active_acous_spec = active_acous_spec[18:58] # cropped spectrogram
+        # active_acous_spec = active_acous_spec[18:58, ::2] # cropped and stepped spectrogram
 
         return (
             # dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),
