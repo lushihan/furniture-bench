@@ -119,6 +119,7 @@ class FurnitureBenchEnvForceArray(gym.Env):
         # Setup visualization
         # plt.ion()
         self.fig, self.ax = plt.subplots()
+        self.fig.canvas.mpl_connect('key_press_event', self.close_plt)
         self.lines = [self.ax.plot(np.zeros((10,)))[0] for _ in range(4)]  # Create a line for each channel
 
         self.ax.set_ylim(0, 1023)  # Assuming FSR values range from 0 to 1023
@@ -353,15 +354,15 @@ class FurnitureBenchEnvForceArray(gym.Env):
             # cv2.waitKey(1)
 
             # visualize contact force array data from FSR
-            # all_values_force_array = force_array[..., 0]
-            # for i, line in enumerate(self.lines):
-            #     line.set_ydata(all_values_force_array[i][::10])
-            # self.fig.canvas.draw()
-            # # self.fig.canvas.flush_events()
-            # plt.pause(0.1)
+            all_values_force_array = force_array[..., 0]
+            for i, line in enumerate(self.lines):
+                line.set_ydata(all_values_force_array[i][::10])
+            self.fig.canvas.draw()
+            # self.fig.canvas.flush_events()
+            plt.pause(0.1)
 
-            cv2.imshow("force array", force_array)
-            cv2.waitKey(1)
+            # cv2.imshow("force array", force_array)
+            # cv2.waitKey(1)
 
             if self.record:
                 self.video_writer.write(img)
@@ -637,6 +638,10 @@ class FurnitureBenchEnvForceArray(gym.Env):
         if self.furniture_name == "stool" and self.from_skill == 1:
             self.robot.open_gripper(blocking=True, gripper_width=0.03)
         return False
+
+    def close_plt(self, event):
+        if event.key == 'q':
+            plt.close(self.fig)
 
     def __del__(self):
         if self.record:

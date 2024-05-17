@@ -258,7 +258,7 @@ class Furniture(ABC):
         # npt.NDArray[np.float32], # active acous fft
         # npt.NDArray[np.float32]  # active acous spec   
         # npt.NDArray[np.uint8], # tactile image   
-        npt.NDArray[np.uint8], # force array  
+        npt.NDArray[np.uint16], # force array  
     ]:
         """Get the shared memory of parts poses and images, and active acous, active acous fft, active acous spec."""
         parts_poses_shm = shared_memory.SharedMemory(name=self.shm[0])
@@ -312,7 +312,7 @@ class Furniture(ABC):
         #     shape=(320, 240, 3), dtype=np.uint8, buffer=tactile_image_shm.buf
         # )
         force_array = np.ndarray(
-            shape=(4, 100, 1), dtype=np.uint8, buffer=force_array_shm.buf
+            shape=(4, 100, 1), dtype=np.uint16, buffer=force_array_shm.buf
         )
 
         return (
@@ -362,7 +362,7 @@ class Furniture(ABC):
         # )
 
         force_array_shm = shared_memory.SharedMemory(
-            create=True, size=np.zeros(shape=(4, 100, 1), dtype=np.uint8).nbytes
+            create=True, size=np.zeros(shape=(4, 100, 1), dtype=np.uint16).nbytes
         )
 
         return (

@@ -193,7 +193,7 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
         #     shape=(320, 240, 3), dtype=np.uint8, buffer=tactile_image_shm.buf
         # )
         force_array = np.ndarray(
-            shape=(4, 100, 1), dtype=np.uint8, buffer=force_array_shm.buf 
+            shape=(4, 100, 1), dtype=np.uint16, buffer=force_array_shm.buf 
         )
 
         lock.acquire()
