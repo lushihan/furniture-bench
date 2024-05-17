@@ -354,12 +354,12 @@ class FurnitureBenchEnvForceArray(gym.Env):
             # cv2.waitKey(1)
 
             # visualize contact force array data from FSR
-            all_values_force_array = force_array[..., 0]
-            for i, line in enumerate(self.lines):
-                line.set_ydata(all_values_force_array[i][::10])
-            self.fig.canvas.draw()
-            # self.fig.canvas.flush_events()
-            plt.pause(0.1)
+            # all_values_force_array = force_array[..., 0]
+            # for i, line in enumerate(self.lines):
+            #     line.set_ydata(all_values_force_array[i][::10])
+            # self.fig.canvas.draw()
+            # # self.fig.canvas.flush_events()
+            # plt.pause(0.0001)
 
             # cv2.imshow("force array", force_array)
             # cv2.waitKey(1)
