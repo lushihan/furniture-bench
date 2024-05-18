@@ -30,6 +30,8 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         self.img_shape = (*config["furniture"]["env_img_size"], 3)
         self.num_envs = 1
 
+        self.action_dimension = 8
+
     @property
     def observation_space(self):
         low, high = -np.inf, np.inf
