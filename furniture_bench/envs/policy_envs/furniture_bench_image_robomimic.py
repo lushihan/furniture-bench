@@ -62,8 +62,8 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         image1 = resize(image1)
         image2 = resize_crop(image2)
 
-        image1 = np.expand_dims(image1, axis=0)
-        image2 = np.expand_dims(image2, axis=0)
+        # image1 = np.expand_dims(image1, axis=0)
+        # image2 = np.expand_dims(image2, axis=0)
 
         return (
             dict(robot_state.__dict__, color_image1=image1, color_image2=image2),
