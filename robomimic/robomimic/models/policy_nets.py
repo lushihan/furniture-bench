@@ -205,7 +205,7 @@ class GaussianActorNetwork(ActorNetwork):
         init_last_fc_weight=None,
         init_std=0.3,
         mean_limits=(-9.0, 9.0),
-        std_limits=(0.007, 7.5),
+        std_limits=(0.007, 3.75), # std_limits=(0.007, 7.5)
         low_noise_eval=True,
         use_tanh=False,
         goal_shapes=None,
