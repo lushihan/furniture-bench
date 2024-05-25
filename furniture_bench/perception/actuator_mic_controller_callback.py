@@ -74,8 +74,8 @@ class ActiveAcousticSensor(object):
                                 channels=self.channels, 
                                 output=True, 
                                 input=True, 
-                                output_device_index=2,
-                                input_device_index=2, # depends on the system
+                                output_device_index=9,
+                                input_device_index=9, # depends on the system
                                 frames_per_buffer=self.frames_per_buffer,
                                 stream_callback=self.get_callback())
     

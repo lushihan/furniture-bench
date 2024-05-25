@@ -30,7 +30,7 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         self.img_shape = (*config["furniture"]["env_img_size"], 3)
         self.num_envs = 1
 
-        self.action_dimension = 8
+        # self.action_dimension = 8
 
     @property
     def observation_space(self):
@@ -95,6 +95,7 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         """
         obs, obs_error = self._get_observation()
         
+        print("action:", action)
         if self.act_rot_repr == "rot_6d":
             import pytorch3d.transforms as pt
 
