@@ -1,7 +1,7 @@
 {
     "algo_name": "act",
     "experiment": {
-        "name": "geometry_cuboid-0.6mm-act-test_2000_abs_v5",
+        "name": "geometry_cuboid-0.6mm-act-test_1000_abs_v7",
         "validate": false,
         "logging": {
             "terminal_output_to_txt": true,
@@ -13,7 +13,7 @@
         "save": {
             "enabled": true,
             "every_n_seconds": null,
-            "every_n_epochs": 250,
+            "every_n_epochs": 100,
             "epochs": [],
             "on_best_validation": false,
             "on_best_rollout_return": false,
@@ -40,7 +40,7 @@
         "data": [{
             "path": "/furniture-bench/cuboid_0.6mm_active_acous_all_v1.hdf5"
         }],
-        "output_dir": "log/act_trained_models_cuboid_0.6mm_visual_only_v5",
+        "output_dir": "log/act_trained_models_cuboid_0.6mm_visual_only_v7",
         "num_data_workers": 4,
         "hdf5_cache_mode": "low_dim",
         "hdf5_use_swmr": true,
@@ -58,8 +58,8 @@
         "action_keys": [
             "action_dict/abs_pos",
             "action_dict/abs_rot_6d",
-            "action_dict/gripper"            
-        ],
+            "action_dict/gripper"
+        ],        
         "action_config": {
             "actions": {
                 "normalization": null
@@ -72,8 +72,7 @@
                 "format": "rot_axis_angle"
             },
             "action_dict/abs_rot_6d": {
-                "normalization": null,
-		"format": "rot_6d"
+                "normalization": null
             },
             "action_dict/rel_pos": {
                 "normalization": null
@@ -96,7 +95,7 @@
         "goal_mode": null,
         "cuda": true,
         "batch_size": 64,
-        "num_epochs": 2000,
+        "num_epochs": 1000,
         "seed": 1,
         "max_grad_norm": 100
     },
