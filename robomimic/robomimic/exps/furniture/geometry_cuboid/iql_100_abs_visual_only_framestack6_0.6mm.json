@@ -1,7 +1,7 @@
 {
     "algo_name": "iql",
     "experiment": {
-        "name": "geometry_cuboid-0.6mm-iql-test_100_abs_v1",
+        "name": "geometry_cuboid-0.6mm-iql-test_100_abs_framestack6_v1",
         "validate": false,
         "logging": {
             "terminal_output_to_txt": true,
