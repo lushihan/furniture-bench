@@ -1,7 +1,7 @@
 {
-    "algo_name": "iql",
+    "algo_name": "act",
     "experiment": {
-        "name": "geometry_cuboid-0.6mm-iql-test_100_abs_framestack6_v1",
+        "name": "geometry_cuboid-0.6mm-act-test_4000_abs",
         "validate": false,
         "logging": {
             "terminal_output_to_txt": true,
@@ -9,16 +9,17 @@
             "log_wandb": true,
             "wandb_proj_name": "furniture-bench"
         },
+        "mse":{},
         "save": {
             "enabled": true,
             "every_n_seconds": null,
-            "every_n_epochs": 1,
+            "every_n_epochs": 500,
             "epochs": [],
             "on_best_validation": false,
             "on_best_rollout_return": false,
             "on_best_rollout_success_rate": true
         },
-        "epoch_every_n_steps": null,
+        "epoch_every_n_steps": 100,
         "validation_epoch_every_n_steps": 10,
         "env": "FurnitureSim-v0",
         "additional_envs": null,
@@ -33,35 +34,32 @@
             "rate": 10,
             "warmstart": 0,
             "terminate_on_success": true
-        },
-        "num_envs": 1
+        }
     },
     "train": {
         "data": [{
-            "path": "/furniture-bench/cuboid_0.6mm_active_acous_all_cropped_spec_next_obs_v1.hdf5"
+            "path": "/furniture-bench/cuboid_0.6mm_active_acous_all_v1.hdf5"
         }],
-        "output_dir": "log/iql_trained_models_cuboid_0.6mm_visual_only_v1",
+        "output_dir": "log/act_trained_models_cuboid_0.6mm_visual_only_v7",
         "num_data_workers": 4,
         "hdf5_cache_mode": "low_dim",
         "hdf5_use_swmr": true,
-        "hdf5_load_next_obs": true,
+        "hdf5_load_next_obs": false,
         "hdf5_normalize_obs": false,
         "hdf5_filter_key": null,
         "hdf5_validation_filter_key": null,
-        "seq_length": 1,
+        "seq_length": 10,
         "pad_seq_length": true,
-        "frame_stack": 6,
+        "frame_stack": 1,
         "pad_frame_stack": true,
         "dataset_keys": [
-            "actions",
-            "rewards",
-            "dones"
+            "actions"
         ],
         "action_keys": [
             "action_dict/abs_pos",
             "action_dict/abs_rot_6d",
             "action_dict/gripper"
-        ],
+        ],        
         "action_config": {
             "actions": {
                 "normalization": null
@@ -97,85 +95,42 @@
         "goal_mode": null,
         "cuda": true,
         "batch_size": 64,
-        "num_epochs": 100,
-        "seed": 1
+        "num_epochs": 4000,
+        "seed": 1,
+        "max_grad_norm": 100
     },
     "algo": {
         "optim_params": {
-            "critic": {
+            "policy": {
+                "optimizer_type": "adamw",
                 "learning_rate": {
-                    "initial": 0.0001,
-                    "decay_factor": 0.0,
-                    "epoch_schedule": []
+                    "initial": 0.00005,
+                    "decay_factor": 1,
+                    "epoch_schedule": [
+                        100
+                    ],
+                    "scheduler_type": "linear"
                 },
                 "regularization": {
-                    "L2": 0.0
-                }
-            },
-            "vf": {
-                "learning_rate": {
-                    "initial": 0.0001,
-                    "decay_factor": 0.0,
-                    "epoch_schedule": []
-                },
-                "regularization": {
-                    "L2": 0.0
-                }
-            },
-            "actor": {
-                "learning_rate": {
-                    "initial": 0.0001,
-                    "decay_factor": 0.0,
-                    "epoch_schedule": []
-                },
-                "regularization": {
-                    "L2": 0.0
+                    "L2": 0.0001
                 }
             }
         },
-        "discount": 0.99,
-        "target_tau": 0.01,
-        "actor": {
-            "net": {
-                "type": "gaussian",
-                "common": {
-                    "std_activation": "softplus",
-                    "low_noise_eval": true,
-                    "use_tanh": false
-                },
-                "gaussian": {
-                    "init_last_fc_weight": 0.001,
-                    "init_std": 0.3,
-                    "fixed_std": false
-                },
-                "gmm": {
-                    "num_modes": 5,
-                    "min_std": 0.0001
-                }
-            },
-            "layer_dims": [
-                300,
-                400
-            ],
-            "max_gradient_norm": null
+        "loss": {
+            "l2_weight": 0.0,
+            "l1_weight": 1.0,
+            "cos_weight": 0.0
         },
-        "critic": {
-            "ensemble": {
-                "n": 2
-            },
-            "layer_dims": [
-                300,
-                400
-            ],
-            "use_huber": false,
-            "max_gradient_norm": null
-        },
-        "adv": {
-            "clip_adv_value": null,
-            "beta": 1.0,
-            "use_final_clip": true
-        },
-        "vf_quantile": 0.9
+        "act": {
+            "hidden_dim": 512,
+            "dim_feedforward": 3200,
+            "backbone": "resnet18",
+            "enc_layers": 4,
+            "dec_layers": 7,
+            "nheads": 8,
+            "latent_dim": 32,
+            "kl_weight": 20
+        }
     },
     "observation": {
         "modalities": {
@@ -186,7 +141,7 @@
                     "robot0_gripper_qpos"
                 ],
                 "rgb": [
-                    "agentview_image", 
+                    "agentview_image",
                     "robot0_eye_in_hand_image"
                 ],
                 "depth": [],
@@ -222,7 +177,7 @@
                         "temperature": 1.0,
                         "noise_std": 0.0
                     }
-                },                
+                },
                 "obs_randomizer_class": "CropRandomizer",
                 "obs_randomizer_kwargs": {
                     "crop_height": 216,
@@ -244,10 +199,5 @@
                 "obs_randomizer_kwargs": {}
             }
         }
-    },
-    "meta": {
-        "hp_base_config_file": null,
-        "hp_keys": [],
-        "hp_values": []
     }
 }
