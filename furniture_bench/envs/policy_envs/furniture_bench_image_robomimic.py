@@ -80,7 +80,7 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         """
         obs, obs_error = self._get_observation()
         
-        print("action:", action)
+        # print("action:", action)
         if self.act_rot_repr == "rot_6d":
             import pytorch3d.transforms as pt
 
@@ -90,7 +90,6 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
             quat = pt.matrix_to_quaternion(rot_mat)
             quat = quat.numpy()
             action = np.concatenate([action[:3], quat, action[-1:]], axis=0)
-            # print("action:", action)
 
         action_success = self.robot.execute(action)
 
