@@ -302,7 +302,8 @@ class Furniture(ABC):
             shape=(1, 2206), dtype=np.float32, buffer=active_acous_fft_shm.buf
         )
         active_acous_spec = np.ndarray(
-            shape=(129, 65, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
+            # shape=(129, 65, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
+            shape=(513, 34, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
         )
 
         return (
@@ -342,7 +343,8 @@ class Furniture(ABC):
             create=True, size=np.zeros(shape=(1, 2206), dtype=np.float32).nbytes
         )
         active_acous_spec_shm = shared_memory.SharedMemory(
-            create=True, size=np.zeros(shape=(129, 65, 1), dtype=np.float32).nbytes
+            # create=True, size=np.zeros(shape=(129, 65, 1), dtype=np.float32).nbytes
+            create=True, size=np.zeros(shape=(513, 34, 1), dtype=np.float32).nbytes
         )        
 
         return (

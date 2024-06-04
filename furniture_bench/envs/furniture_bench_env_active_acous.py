@@ -177,7 +177,8 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
                 ),
                 "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit shape later
                 "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
-                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
+                # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
+                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(513, 34, 1)),
             }
         )
 
@@ -328,7 +329,7 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
             active_acous_spec_vis = np.squeeze(active_acous_spec, axis=2)
             active_acous_spec_normal = np.zeros(np.shape(active_acous_spec_vis))
             active_acous_spec_normal = cv2.normalize(active_acous_spec_vis, active_acous_spec_normal, 0, 255, cv2.NORM_MINMAX)
-            cv2.imshow("Active acous spectrogram", active_acous_spec_normal)
+            cv2.imshow("Active acous spectrogram", active_acous_spec_normal[28:233])
             cv2.waitKey(1)
 
             if self.record:

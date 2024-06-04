@@ -172,7 +172,8 @@ def detection_loop(config, parts, num_parts, tag_size, lock, shm):
             shape=(1, 2206), dtype=np.float32, buffer=active_acous_fft_shm.buf
         )        
         active_acous_spec = np.ndarray(
-            shape=(129, 65, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
+            # shape=(129, 65, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
+            shape=(513, 34, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
         )
 
         lock.acquire()

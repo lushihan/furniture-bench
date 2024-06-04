@@ -39,7 +39,7 @@ class ActiveAcousticSensor(object):
         # frames_per_buffer,
         excitation_mode # 'impulse', 'linear', 'exponential'
         ):
-        self.channels = 1
+        self.channels = 2
         self.sample_rate = sample_rate
         self.frame_rate = frame_rate
         self.frames_per_buffer = int(self.sample_rate / self.frame_rate)
@@ -60,13 +60,22 @@ class ActiveAcousticSensor(object):
         self.im = None
 
         # for debugging
-        # print(self.p.get_device_info_by_index(0)['defaultSampleRate']) # important, otherwise may crash
-        # info = self.p.get_host_api_info_by_index(0)
-        # numdevices = info.get('deviceCount')
+        print(self.p.get_device_info_by_index(0)['defaultSampleRate']) # important, otherwise may crash
+        info = self.p.get_host_api_info_by_index(0)
+        numdevices = info.get('deviceCount')
 
-        # for i in range(0, numdevices):
-        #     if (self.p.get_device_info_by_host_api_device_index(0, i).get('maxOutputChannels')) > 0:
-        #         print("Output Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name'))
+        for i in range(0, numdevices):
+            # if (self.p.get_device_info_by_host_api_device_index(0, i).get('maxOutputChannels')) > 0:
+            #     print("Output Device id ", i, " - ", self.p.get_device_info_by_host_api_device_index(0, i).get('name'))
+            device_info = self.p.get_device_info_by_host_api_device_index(0, i)
+            max_output_channels = device_info.get('maxOutputChannels')
+            max_input_channels = device_info.get('maxInputChannels')
+            
+            if max_output_channels > 0:
+                print(f"Output Device id {i} - {device_info.get('name')}, Channels: {max_output_channels}")
+            
+            if max_input_channels > 0:
+                print(f"Input Device id {i} - {device_info.get('name')}, Channels: {max_input_channels}")
 
     def streaming(self):
         self._stream = self.p.open(rate=self.sample_rate, 
@@ -89,10 +98,10 @@ class ActiveAcousticSensor(object):
         def callback(in_data, frame_count, time_info, status):
             numpydata = numpy.frombuffer(in_data, dtype=numpy.float32) # input to mic
             
-            self.current_frame = numpydata.copy()
+            self.current_frame = numpydata[1::2].copy() # extract mono channel from stero channal
             # self.input_buffer.append(numpydata)
-            # print(numpydata)
-            self.q.put(numpydata) # for visualization
+            # print("current_frame:", numpydata[1::2])
+            self.q.put(numpydata[1::2]) # for visualization
 
             out_data = numpy.float32(numpy.vstack(self.excitation_signal()).ravel()) # output to actuator
             return (out_data, pyaudio.paContinue)
@@ -194,8 +203,8 @@ class ActiveAcousticSensor(object):
 
     def get_specgram(self, signal, rate):
         arr2D, freqs, bins = specgram(signal, window=window_hanning,
-                                Fs=rate, NFFT=256,
-                                noverlap=192)
+                                Fs=rate, NFFT=1024, # NFFT=256, noverlap=192
+                                noverlap=922)
         return arr2D,freqs,bins
 
     def get_fft(self):
@@ -214,8 +223,15 @@ class ActiveAcousticSensor(object):
         # _signal = numpy.squeeze(raw_signal, axis=0)
         signal_fft = numpy.abs(rfft(raw_signal))
         arr2D, _, _ = specgram(raw_signal, window=window_hanning,
-                        Fs=self.sample_rate, NFFT=256,
-                        noverlap=192)
+                        Fs=self.sample_rate, NFFT=1024, # NFFT=256, noverlap=192
+                        noverlap=922)
+        
+        # log_scale = 10 * numpy.log10(arr2D + 1e-10)
+        # normalized_log_scale = (log_scale - (-100)) / (-50 - (-100))
+        # # print("linear:", numpy.min(arr2D), numpy.max(arr2D))
+        # print("log:", numpy.min(log_scale), numpy.max(log_scale))
+        # print("normalized log:", numpy.min(normalized_log_scale), numpy.max(normalized_log_scale))
+
         return (
             numpy.expand_dims(raw_signal, axis=0), 
             numpy.expand_dims(signal_fft, axis=0), 
