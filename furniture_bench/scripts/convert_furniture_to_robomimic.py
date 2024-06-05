@@ -105,7 +105,13 @@ def main():
             obs["active_acous"] = obs["active_acous"] # active_acous
             obs["active_acous_fft"] = obs["active_acous_fft"]
             # obs["active_acous_spec"] = obs["active_acous_spec"]
-            obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
+            # obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
+
+            active_acous_spec_raw = np.array(obs["active_acous_spec"])
+            active_acous_spec_raw_log = 10 * np.log10(active_acous_spec_raw + 1e-10)
+            active_acous_spec_raw_log_normalized = ( active_acous_spec_raw_log - (-100) ) / ( -50 - (-100) )
+            obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 28:233]
+
             # print(np.shape(obs["active_acous_spec"]))
 
             del obs["parts_poses"]

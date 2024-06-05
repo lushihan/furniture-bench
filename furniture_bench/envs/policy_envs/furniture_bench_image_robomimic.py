@@ -51,12 +51,12 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 "gripper_width": gym.spaces.Box(low=low, high=high, shape=(1,)),
                 "color_image1": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
                 "color_image2": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
-                # "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
+                # "active_acous": gym.spaces.Box(low=-1, high=1, shape=(1, 4410)), ## edit range and shape later
                 # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
-                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 65, 1)), # if spec is cropped to a specific range
+                # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 65, 1)), # if spec is cropped to a specific range
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 33, 1)), # if spec is cropped to a specific range and stepped in time
-
+                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(205, 34, 1)), # if spec is cropped to a specific range with Focusrite audio interface
             }
         )
 
@@ -70,8 +70,13 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         image2 = resize_crop(image2)
 
         # crop active acous spec to [3000, 10000] Hz
-        active_acous_spec = active_acous_spec[18:58] # cropped spectrogram
+        # active_acous_spec = active_acous_spec[18:58] # cropped spectrogram
         # active_acous_spec = active_acous_spec[18:58, ::2] # cropped and stepped spectrogram
+
+        # convert to log scale, normalization, and crop to [1200, 10000] Hz
+        active_acous_spec = 10 * np.log10(active_acous_spec + 1e-10)
+        active_acous_spec = ( active_acous_spec - (-100) ) / ( -50 - (-100) )
+        active_acous_spec = active_acous_spec[28:233]
 
         return (
             # dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),

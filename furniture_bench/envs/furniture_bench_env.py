@@ -184,9 +184,10 @@ class FurnitureBenchEnv(gym.Env):
                     high=high,
                     shape=(self.furniture.num_parts * self.pose_dim,),
                 ),
-                "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
+                "active_acous": gym.spaces.Box(low=-1, high=1, shape=(1, 4410)), ## edit range and shape later
                 "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
-                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),                
+                # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),   
+                "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(513, 34, 1)), # 513?                  
             }
         )
 
