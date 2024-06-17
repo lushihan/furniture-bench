@@ -888,7 +888,7 @@ class ShallowConv(ConvBase):
         self._input_channel = input_channel
         self._output_channel = output_channel
         self.nets = nn.Sequential(
-            torch.nn.Conv2d(input_channel, 64, kernel_size=7, stride=2, padding=3),
+            torch.nn.Conv2d(input_channel, 64, kernel_size=7, stride=2, padding=(2,3)), # padding=3
             torch.nn.ReLU(),
             torch.nn.Conv2d(64, 32, kernel_size=1, stride=1, padding=0),
             torch.nn.ReLU(),

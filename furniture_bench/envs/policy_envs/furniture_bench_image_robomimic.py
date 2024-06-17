@@ -53,10 +53,12 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 "color_image2": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
                 # "active_acous": gym.spaces.Box(low=-1, high=1, shape=(1, 4410)), ## edit range and shape later
                 # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
+                # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 700)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 65, 1)), # if spec is cropped to a specific range
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 33, 1)), # if spec is cropped to a specific range and stepped in time
                 "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(41, 34, 1)), # if spec is cropped to a specific range with Focusrite audio interface
+                # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(163, 34, 1)),           
             }
         )
 
@@ -69,6 +71,9 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         image1 = resize(image1)
         image2 = resize_crop(image2)
 
+        # crop active acous fft to [3000, 10000] Hz
+        # active_acous_fft = active_acous_fft[:, 300:1000]
+
         # crop active acous spec to [3000, 10000] Hz
         # active_acous_spec = active_acous_spec[18:58] # cropped spectrogram
         # active_acous_spec = active_acous_spec[18:58, ::2] # cropped and stepped spectrogram
@@ -76,6 +81,7 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         # convert to log scale, normalization, and crop to [3000, 10000] Hz
         active_acous_spec = 10 * np.log10(active_acous_spec + 1e-10)
         active_acous_spec = ( active_acous_spec - (-100) ) / ( -50 - (-100) )
+        # active_acous_spec = active_acous_spec[70:233]
         active_acous_spec = active_acous_spec[70:233:4]
 
         return (

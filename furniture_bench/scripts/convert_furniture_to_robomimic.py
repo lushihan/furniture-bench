@@ -103,7 +103,10 @@ def main():
             obs["agentview_image"] = obs["color_image2"]
             # obs["active_acous"] = np.expand_dims(obs["active_acous"], axis=1) # SL: active_acous, add a dimension
             obs["active_acous"] = obs["active_acous"] # active_acous
-            obs["active_acous_fft"] = obs["active_acous_fft"]
+
+            active_acous_fft_raw = np.array(obs["active_acous_fft"])
+            obs["active_acous_fft"] = active_acous_fft_raw[:, :, 300:1000]
+            
             # obs["active_acous_spec"] = obs["active_acous_spec"]
             # obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
 
@@ -111,7 +114,8 @@ def main():
             active_acous_spec_raw_log = 10 * np.log10(active_acous_spec_raw + 1e-10)
             active_acous_spec_raw_log_normalized = ( active_acous_spec_raw_log - (-100) ) / ( -50 - (-100) )
             # obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 28:233]
-            obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233:4]
+            # obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233:4]
+            obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233]
 
 
             # print(np.shape(obs["active_acous_spec"]))
