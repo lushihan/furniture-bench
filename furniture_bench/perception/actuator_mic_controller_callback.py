@@ -83,8 +83,8 @@ class ActiveAcousticSensor(object):
                                 channels=self.channels, 
                                 output=True, 
                                 input=True, 
-                                output_device_index=2,
-                                input_device_index=2, # depends on the system
+                                output_device_index=9,
+                                input_device_index=9, # depends on the system
                                 frames_per_buffer=self.frames_per_buffer,
                                 stream_callback=self.get_callback())
     
@@ -228,7 +228,7 @@ class ActiveAcousticSensor(object):
         
         # log_scale = 10 * numpy.log10(arr2D + 1e-10)
         # normalized_log_scale = (log_scale - (-100)) / (-50 - (-100))
-        # # print("linear:", numpy.min(arr2D), numpy.max(arr2D))
+        # print("linear:", numpy.min(arr2D), numpy.max(arr2D))
         # print("log:", numpy.min(log_scale), numpy.max(log_scale))
         # print("normalized log:", numpy.min(normalized_log_scale), numpy.max(normalized_log_scale))
 
