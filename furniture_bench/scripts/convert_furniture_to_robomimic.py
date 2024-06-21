@@ -111,11 +111,16 @@ def main():
             # obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
 
             active_acous_spec_raw = np.array(obs["active_acous_spec"])
-            active_acous_spec_raw_log = 10 * np.log10(active_acous_spec_raw + 1e-10)
-            active_acous_spec_raw_log_normalized = ( active_acous_spec_raw_log - (-100) ) / ( -50 - (-100) )
+            # active_acous_spec_raw_log = 10 * np.log10(active_acous_spec_raw + 1e-10)
+            # active_acous_spec_raw_log_normalized = ( active_acous_spec_raw_log - (-100) ) / ( -50 - (-100) )
+            active_acous_spec_raw_linear_normalized = active_acous_spec_raw * 1e7
+
+
             # obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 28:233]
             # obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233:4]
-            obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233]
+            # obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233]
+
+            obs["active_acous_spec"] = active_acous_spec_raw_linear_normalized[:, 70:233]
 
 
             # print(np.shape(obs["active_acous_spec"]))
