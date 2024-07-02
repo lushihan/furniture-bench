@@ -22,6 +22,7 @@ from furniture_bench.envs.initialization_mode import Randomness, str_to_enum
 from furniture_bench.data.collect_enum import CollectEnum
 
 from matplotlib.mlab import window_hanning, specgram
+import matplotlib.pyplot as plt
 
 
 class FurnitureBenchEnvActiveAcous(gym.Env):
@@ -124,6 +125,14 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
             size = (224 * 2, 224) if self.resize_img else (1280 * 2, 720)
             fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
             self.video_writer = cv2.VideoWriter(str(path), fourcc, 20, size)
+
+        # Setup visualization (for fft)
+        self.fig, self.ax = plt.subplots()
+        self.fig.canvas.mpl_connect('key_press_event', self.close_plt)
+        self.lines = [self.ax.plot(np.zeros((700,)))[0] for _ in range(1)]  # Create a line for each channel
+
+        self.ax.set_ylim(0, 8)  # Showing magnitude of frequency bins in [0, 8]
+        self.ax.set_xlim(0, 700)  # Window size of 700 samples for frequency bins
 
     def _get_cam_info(self):
         """Gets intrinsic/extrinsic parameters of Intel RealSense cameras."""
@@ -326,11 +335,20 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
             #     Fs=44100, 
             #     NFFT=256,
             #     noverlap=192)
+
             active_acous_spec_vis = np.squeeze(active_acous_spec, axis=2)
             active_acous_spec_normal = np.zeros(np.shape(active_acous_spec_vis))
             active_acous_spec_normal = cv2.normalize(active_acous_spec_vis, active_acous_spec_normal, 0, 255, cv2.NORM_MINMAX)
-            cv2.imshow("Active acous spectrogram", active_acous_spec_normal[28:233])
+            cv2.imshow("Active acous spec", active_acous_spec_normal[70:233])
             cv2.waitKey(1)
+
+            # visualize fft of active acous 
+            # active_acous_fft_temp = np.squeeze(active_acous_fft, axis=0)
+            # for i, line in enumerate(self.lines):
+            #     line.set_ydata(active_acous_fft_temp[300:1000])
+            # self.fig.canvas.draw()
+            # # self.fig.canvas.flush_events()
+            # plt.pause(0.0001)
 
             if self.record:
                 self.video_writer.write(img)
@@ -604,6 +622,10 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
         if self.furniture_name == "stool" and self.from_skill == 1:
             self.robot.open_gripper(blocking=True, gripper_width=0.03)
         return False
+
+    def close_plt(self, event):
+        if event.key == 'q':
+            plt.close(self.fig)
 
     def __del__(self):
         if self.record:

@@ -230,7 +230,10 @@ class ActiveAcousticSensor(object):
         # normalized_log_scale = (log_scale - (-100)) / (-50 - (-100))
         # print("linear:", numpy.min(arr2D), numpy.max(arr2D))
         # print("log:", numpy.min(log_scale), numpy.max(log_scale))
-        # print("normalized log:", numpy.min(normalized_log_scale), numpy.max(normalized_log_scale))
+        # print("normalized log all:", numpy.min(normalized_log_scale), numpy.max(normalized_log_scale))
+        # print("normalized log cropped:", numpy.min(normalized_log_scale[70:233, :]), numpy.max(normalized_log_scale[70:233, :]))
+
+        # print("fft range:", numpy.min(signal_fft[300:1000]), numpy.max(signal_fft[300:1000]))
 
         return (
             numpy.expand_dims(raw_signal, axis=0), 
