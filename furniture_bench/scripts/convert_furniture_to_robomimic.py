@@ -98,9 +98,11 @@ def main():
             obs["object"] = obs["parts_poses"]
             obs["robot0_eef_pos"] = obs["ee_pos"]
             obs["robot0_eef_quat"] = obs["ee_quat"]
+            obs["robot0_joint_torque"] = obs["joint_torques"]
             obs["robot0_gripper_qpos"] = np.array(obs["gripper_width"]).reshape(-1, 1) # Add a dimension since squeezed in data saving.
             obs["robot0_eye_in_hand_image"] = obs["color_image1"]
             obs["agentview_image"] = obs["color_image2"]
+
             # obs["active_acous"] = np.expand_dims(obs["active_acous"], axis=1) # SL: active_acous, add a dimension
             obs["active_acous"] = obs["active_acous"] # active_acous
 
@@ -111,17 +113,17 @@ def main():
             # obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
 
             active_acous_spec_raw = np.array(obs["active_acous_spec"])
-            # active_acous_spec_raw_log = 10 * np.log10(active_acous_spec_raw + 1e-10)
-            # active_acous_spec_raw_log_normalized = ( active_acous_spec_raw_log - (-100) ) / ( -50 - (-100) )
-            active_acous_spec_raw_linear_normalized = active_acous_spec_raw * 1e5
+            active_acous_spec_raw_log = 10 * np.log10(active_acous_spec_raw + 1e-10)
+            active_acous_spec_raw_log_normalized = ( active_acous_spec_raw_log - (-100) ) / ( -50 - (-100) )
+            # active_acous_spec_raw_linear_normalized = active_acous_spec_raw * 1e5
 
 
             # obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 28:233]
-            # obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233:4]
+            obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233:4]
             # obs["active_acous_spec"] = active_acous_spec_raw_log_normalized[:, 70:233]
 
             # obs["active_acous_spec"] = active_acous_spec_raw_linear_normalized[:, 70:233]
-            obs["active_acous_spec"] = active_acous_spec_raw_linear_normalized[:, 70:233:4]
+            # obs["active_acous_spec"] = active_acous_spec_raw_linear_normalized[:, 70:233:4]
 
 
 
@@ -130,6 +132,7 @@ def main():
             del obs["parts_poses"]
             del obs["ee_pos"]
             del obs["ee_quat"]
+            del obs["joint_torques"]
             del obs["gripper_width"]
             del obs["color_image1"]
             del obs["color_image2"]
