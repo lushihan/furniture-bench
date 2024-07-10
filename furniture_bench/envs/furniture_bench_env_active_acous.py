@@ -131,7 +131,7 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
         self.fig.canvas.mpl_connect('key_press_event', self.close_plt)
         self.lines = [self.ax.plot(np.zeros((700,)))[0] for _ in range(1)]  # Create a line for each channel
 
-        self.ax.set_ylim(0, 8)  # Showing magnitude of frequency bins in [0, 8]
+        self.ax.set_ylim(0, 5)  # Showing magnitude of frequency bins in [0, 8]
         self.ax.set_xlim(0, 700)  # Window size of 700 samples for frequency bins
 
     def _get_cam_info(self):
@@ -336,19 +336,19 @@ class FurnitureBenchEnvActiveAcous(gym.Env):
             #     NFFT=256,
             #     noverlap=192)
 
-            active_acous_spec_vis = np.squeeze(active_acous_spec, axis=2)
-            active_acous_spec_normal = np.zeros(np.shape(active_acous_spec_vis))
-            active_acous_spec_normal = cv2.normalize(active_acous_spec_vis, active_acous_spec_normal, 0, 255, cv2.NORM_MINMAX)
-            cv2.imshow("Active acous spec", active_acous_spec_normal[70:233])
-            cv2.waitKey(1)
+            # active_acous_spec_vis = np.squeeze(active_acous_spec, axis=2)
+            # active_acous_spec_normal = np.zeros(np.shape(active_acous_spec_vis))
+            # active_acous_spec_normal = cv2.normalize(active_acous_spec_vis, active_acous_spec_normal, 0, 255, cv2.NORM_MINMAX)
+            # cv2.imshow("Active acous spec", active_acous_spec_normal[70:233])
+            # cv2.waitKey(1)
 
             # visualize fft of active acous 
-            # active_acous_fft_temp = np.squeeze(active_acous_fft, axis=0)
-            # for i, line in enumerate(self.lines):
-            #     line.set_ydata(active_acous_fft_temp[300:1000])
-            # self.fig.canvas.draw()
-            # # self.fig.canvas.flush_events()
-            # plt.pause(0.0001)
+            active_acous_fft_temp = np.squeeze(active_acous_fft, axis=0)
+            for i, line in enumerate(self.lines):
+                line.set_ydata(active_acous_fft_temp[300:1000])
+            self.fig.canvas.draw()
+            # self.fig.canvas.flush_events()
+            plt.pause(0.0001)
 
             if self.record:
                 self.video_writer.write(img)
