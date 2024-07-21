@@ -114,7 +114,8 @@ class DETRVAE(nn.Module):
             latent_input = self.latent_out_proj(latent_sample)
         else:
             mu = logvar = None
-            latent_sample = torch.zeros([bs, self.latent_dim], dtype=torch.float32).to(qpos.device)
+            # latent_sample = torch.zeros([bs, self.latent_dim], dtype=torch.float32).to(qpos.device)
+            latent_sample = torch.randn([bs, self.latent_dim], dtype=torch.float32).to(qpos.device)
             latent_input = self.latent_out_proj(latent_sample)
 
         if self.backbones is not None:
