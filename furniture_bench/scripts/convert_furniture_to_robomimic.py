@@ -99,6 +99,7 @@ def main():
             obs["object"] = obs["parts_poses"]
             obs["robot0_eef_pos"] = obs["ee_pos"]
             obs["robot0_eef_quat"] = obs["ee_quat"]
+            obs["robot0_joint_torque"] = obs["joint_torques"]
             obs["robot0_gripper_qpos"] = np.array(obs["gripper_width"]).reshape(-1, 1) # Add a dimension since squeezed in data saving.
             obs["robot0_eye_in_hand_image"] = obs["color_image1"]
             obs["agentview_image"] = obs["color_image2"]
@@ -117,6 +118,7 @@ def main():
             del obs["gripper_width"]
             del obs["color_image1"]
             del obs["color_image2"]
+            del obs["joint_torques"]
 
             # del active acous modalities that are not used
             # del obs["active_acous"]
