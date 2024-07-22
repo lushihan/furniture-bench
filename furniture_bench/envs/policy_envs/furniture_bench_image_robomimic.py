@@ -53,7 +53,7 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 65, 1)), # if spec is cropped to a specific range
-                "tactile_image": gym.spaces.Box(low=0, high=255, space=(320, 240, 3)),
+                "tactile_image": gym.spaces.Box(low=0, high=255, shape=(320, 240, 3)),
             }
         )
 
