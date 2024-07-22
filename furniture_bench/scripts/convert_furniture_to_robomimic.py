@@ -96,6 +96,7 @@ def main():
             # "color_image2"  -> "agentview_image"
             # "active_acous"  -> "active_acous"
             # "tactile_image" -> "tactile_image"
+            # "force_array"   -> "force_array"
             obs["object"] = obs["parts_poses"]
             obs["robot0_eef_pos"] = obs["ee_pos"]
             obs["robot0_eef_quat"] = obs["ee_quat"]
@@ -110,7 +111,9 @@ def main():
             # obs["active_acous_spec"] = np.array(obs["active_acous_spec"])[:, 18:58, ::2] # cropped and stepped
             # # print(np.shape(obs["active_acous_spec"]))
 
-            obs["tactile_image"] = obs["tactile_image"]
+            # obs["tactile_image"] = obs["tactile_image"]
+
+            obs["force_array"] = obs["force_array"]
 
             del obs["parts_poses"]
             del obs["ee_pos"]

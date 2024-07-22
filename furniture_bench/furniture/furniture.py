@@ -256,7 +256,8 @@ class Furniture(ABC):
         # npt.NDArray[np.float32], # active acous
         # npt.NDArray[np.float32], # active acous fft
         # npt.NDArray[np.float32]  # active acous spec
-        npt.NDArray[np.uint8], # tactile image
+        # npt.NDArray[np.uint8], # tactile image
+        npt.NDArray[np.uint16], # force array
     ]:
         """Get the shared memory of parts poses and images, and active acous, active acous fft, active acous spec."""
         parts_poses_shm = shared_memory.SharedMemory(name=self.shm[0])
@@ -270,7 +271,8 @@ class Furniture(ABC):
         # active_acous_shm = shared_memory.SharedMemory(name=self.shm[8])
         # active_acous_fft_shm = shared_memory.SharedMemory(name=self.shm[9])
         # active_acous_spec_shm = shared_memory.SharedMemory(name=self.shm[10])
-        tactile_image_shm = shared_memory.SharedMemory(name=self.shm[8])
+        # tactile_image_shm = shared_memory.SharedMemory(name=self.shm[8])
+        force_array_shm = shared_memory.SharedMemory(name=self.shm[8])
 
         parts_poses = np.ndarray(
             shape=(self.num_parts * 7,), dtype=np.float32, buffer=parts_poses_shm.buf
@@ -305,8 +307,11 @@ class Furniture(ABC):
         # active_acous_spec = np.ndarray(
         #     shape=(129, 65, 1), dtype=np.float32, buffer=active_acous_spec_shm.buf
         # )
-        tactile_image = np.ndarray(
-            shape=(320, 240, 3), dtype=np.uint8, buffer=tactile_image_shm.buf
+        # tactile_image = np.ndarray(
+        #     shape=(320, 240, 3), dtype=np.uint8, buffer=tactile_image_shm.buf
+        # )
+        force_array = np.ndarray(
+            shape=(4, 100, 1), dtype=np.uint16, buffer=force_array_shm.buf
         )
 
         return (
@@ -321,7 +326,8 @@ class Furniture(ABC):
             # active_acous.copy(),
             # active_acous_fft.copy(),
             # active_acous_spec.copy()
-            tactile_image.copy()
+            # tactile_image.copy()
+            force_array.copy()
         )
 
     def create_shared_memory(self) -> Tuple[str, str, str, str, str, str, str, str, str, str, str]:
@@ -350,8 +356,12 @@ class Furniture(ABC):
         #     create=True, size=np.zeros(shape=(129, 65, 1), dtype=np.float32).nbytes
         # )
 
-        tactile_image_shm = shared_memory.SharedMemory(
-            create=True, size=np.zeros(shape=(320, 240, 3), dtype=np.uint8).nbytes
+        # tactile_image_shm = shared_memory.SharedMemory(
+        #     create=True, size=np.zeros(shape=(320, 240, 3), dtype=np.uint8).nbytes
+        # )
+
+        force_array_shm = shared_memory.SharedMemory(
+            create=True, size=np.zeros(shape=(4, 100, 1), dtype=np.uint16).nbytes
         )
 
         return (
@@ -366,7 +376,8 @@ class Furniture(ABC):
             # active_acous_shm.name,
             # active_acous_fft_shm.name,
             # active_acous_spec_shm.name
-            tactile_image_shm.name
+            # tactile_image_shm.name
+            force_array_shm.name
         )
 
     def _create_shared_memory_for_img(self):

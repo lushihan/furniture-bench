@@ -187,7 +187,8 @@ class FurnitureBenchEnv(gym.Env):
                 # "active_acous": gym.spaces.Box(low=0, high=1, shape=(1, 4410)), ## edit range and shape later
                 # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),  
-                "tactile_image": gym.spaces.Box(low=0, high=255, shape=(320, 240, 3)),              
+                # "tactile_image": gym.spaces.Box(low=0, high=255, shape=(320, 240, 3)),
+                "force_array": gym.spaces.Box(low=0, high=high, shape=(4, 100, 1)),              
             }
         )
 
@@ -282,7 +283,8 @@ class FurnitureBenchEnv(gym.Env):
             # active_acous,
             # active_acous_fft,
             # active_acous_spec,
-            tactile_image,
+            # tactile_image,
+            force_array,
         ) = self.furniture.get_parts_poses()
         img = cv2.cvtColor(np.hstack([color_img1, color_img2]), cv2.COLOR_RGB2BGR)
 
@@ -356,7 +358,8 @@ class FurnitureBenchEnv(gym.Env):
                 # active_acous=active_acous,
                 # active_acous_fft=active_acous_fft,
                 # active_acous_spec=active_acous_spec,
-                tactile_image=tactile_image,
+                # tactile_image=tactile_image,
+                force_array=force_array,
             ), # key name matters
             PandaError.OK,
         )

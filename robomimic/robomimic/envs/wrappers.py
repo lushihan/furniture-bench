@@ -265,7 +265,9 @@ class FurniturePreprocessWrapper(EnvWrapper):
         # ob_dict["active_acous_spec"] = ob_dict["active_acous_spec"]
         # # ob_dict["active_acous_fft"] = ob_dict["active_acous_fft"]
 
-        ob_dict["tactile_image"] = ob_dict["tactile_image"]
+        # ob_dict["tactile_image"] = ob_dict["tactile_image"]
+
+        ob_dict["force_array"] = ob_dict["force_array"]
 
         for k in ob_dict:
             if (k in ObsUtils.OBS_KEYS_TO_MODALITIES) and (ObsUtils.key_is_obs_modality(key=k, obs_modality="rgb") or ObsUtils.key_is_obs_modality(key=k, obs_modality="depth") or ObsUtils.key_is_obs_modality(key=k, obs_modality="scan")): #??
