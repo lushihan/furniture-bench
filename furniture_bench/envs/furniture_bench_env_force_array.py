@@ -119,13 +119,15 @@ class FurnitureBenchEnvForceArray(gym.Env):
         # Setup visualization
         # plt.ion()
         self.fig, self.ax = plt.subplots()
+        labels = ["A0", "A1", "A2", "A3"]
         self.fig.canvas.mpl_connect('key_press_event', self.close_plt)
-        self.lines = [self.ax.plot(np.zeros((10,)))[0] for _ in range(4)]  # Create a line for each channel
+        self.lines = [self.ax.plot(np.zeros((10,)), label=label)[0] for label in labels]  # Create a line for each channel
 
         self.ax.set_ylim(0, 1023)  # Assuming FSR values range from 0 to 1023
         self.ax.set_xlim(0, 10)  # Window size of 100 samples
         self.ax.set_xlabel('Sample')
         self.ax.set_ylabel('FSR Reading')
+        self.ax.legend()
 
         # plt.show(block=False)
 
@@ -354,12 +356,12 @@ class FurnitureBenchEnvForceArray(gym.Env):
             # cv2.waitKey(1)
 
             # visualize contact force array data from FSR
-            # all_values_force_array = force_array[..., 0]
-            # for i, line in enumerate(self.lines):
-            #     line.set_ydata(all_values_force_array[i][::10])
-            # self.fig.canvas.draw()
-            # # self.fig.canvas.flush_events()
-            # plt.pause(0.0001)
+            all_values_force_array = force_array[..., 0]
+            for i, line in enumerate(self.lines):
+                line.set_ydata(all_values_force_array[i][::10])
+            self.fig.canvas.draw()
+            # self.fig.canvas.flush_events()
+            plt.pause(0.0001)
 
             # cv2.imshow("force array", force_array)
             # cv2.waitKey(1)
