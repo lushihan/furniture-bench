@@ -394,6 +394,27 @@ def to_uint8(x):
     )
 
 
+def to_int16(x):
+    """
+    Converts all torch tensors and numpy arrays in nested dictionary or list 
+    or tuple to uint8 type entries, and returns a new nested structure.
+
+    Args:
+        x (dict or list or tuple): a possibly nested dictionary or list or tuple
+
+    Returns:
+        y (dict or list or tuple): new nested dict-list-tuple
+    """
+    return recursive_dict_list_tuple_apply(
+        x,
+        {
+            torch.Tensor: lambda x: x.byte(),
+            np.ndarray: lambda x: x.astype(np.int16),
+            type(None): lambda x: x,
+        }
+    )
+
+
 def to_torch(x, device):
     """
     Converts all numpy arrays and torch tensors in nested dictionary or list or tuple to 

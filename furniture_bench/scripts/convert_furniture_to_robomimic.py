@@ -112,8 +112,10 @@ def main():
             # # print(np.shape(obs["active_acous_spec"]))
 
             # obs["tactile_image"] = obs["tactile_image"]
+            force_array_temp = np.array(obs["force_array"])
+            obs["force_array"] = force_array_temp.astype(np.int16)  # change later
 
-            obs["force_array"] = obs["force_array"]
+            # obs["force_array"] = obs["force_array"]  
 
             del obs["parts_poses"]
             del obs["ee_pos"]
