@@ -254,6 +254,7 @@ class FurniturePreprocessWrapper(EnvWrapper):
         # ob_dict["object"] = ob_dict["parts_poses"]
         ob_dict["robot0_eef_pos"] = ob_dict["ee_pos"]
         ob_dict["robot0_eef_quat"] = ob_dict["ee_quat"]
+        ob_dict["robot0_joint_torque"] = ob_dict["joint_torques"] # added robot state
         ### YW: this doesn't work for ACT and Diffusion Policy
         # ob_dict["robot0_gripper_qpos"] = ob_dict["gripper_width"].reshape(-1, 1) # Add a dimension since squeezed in data saving.
         ob_dict["robot0_gripper_qpos"] = ob_dict["gripper_width"]
