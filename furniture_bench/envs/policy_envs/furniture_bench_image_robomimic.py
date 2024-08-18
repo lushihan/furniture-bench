@@ -5,6 +5,10 @@ import numpy as np
 from gymnasium import spaces
 import gymnasium as gym
 
+import cv2
+# from scipy.io import wavfile
+import wave
+
 from furniture_bench.envs.furniture_bench_env import FurnitureBenchEnv
 from furniture_bench.config import config
 from furniture_bench.perception.image_utils import resize, resize_crop
@@ -32,6 +36,11 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
 
         self.action_dimension = 10
 
+        # self.audio_fft_writer = 
+        # self.audio_raw_filename = "output.wav"
+        self.active_acous_raw_chunks = []
+        self.active_acous_fft_chunks = []
+
     @property
     def observation_space(self):
         low, high = -np.inf, np.inf
@@ -51,7 +60,7 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 "gripper_width": gym.spaces.Box(low=low, high=high, shape=(1,)),
                 "color_image1": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
                 "color_image2": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
-                # "active_acous": gym.spaces.Box(low=-1, high=1, shape=(1, 4410)), ## edit range and shape later
+                "active_acous": gym.spaces.Box(low=-1, high=1, shape=(1, 4410)), ## edit range and shape later
                 # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
                 "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 700)), ## cropped fft
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
@@ -66,7 +75,7 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         """If successful, returns (obs, True); otherwise, returns (None, False)."""
         robot_state, panda_error = self.robot.get_state()
         # _, _, image1, _, image2, _, _, _, _, _, active_acous_spec = self.furniture.get_parts_poses()
-        _, _, image1, _, image2, _, _, _, _, active_acous_fft, _ = self.furniture.get_parts_poses()
+        _, _, image1, _, image2, _, _, _, active_acous, active_acous_fft, _ = self.furniture.get_parts_poses()
 
         image1 = resize(image1)
         image2 = resize_crop(image2)
@@ -88,12 +97,33 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         # # active_acous_spec = active_acous_spec[70:233]
         # active_acous_spec = active_acous_spec[70:233:4]
 
+        img_record = cv2.cvtColor(np.hstack([image1, image2]), cv2.COLOR_RGB2BGR)
+
+        # img_record = np.hstack(
+        #     [
+        #         resize(cv2.cvtColor(color_img1, cv2.COLOR_RGB2BGR)),
+        #         resize_crop(cv2.cvtColor(color_img2, cv2.COLOR_RGB2BGR)),
+        #     ]
+        # )
+        if self.record:
+            self.video_writer.write(img_record)
+
+            # with wave.open(self.audio_raw_filename, 'wb') as wf:
+            #     wf.setnchannels(1)
+            #     wf.setsampwidth(2)
+            #     wf.setframerate(44100)
+            #     wf.writeframes(active_acous.tobytes())
+
+            self.active_acous_raw_chunks.append(active_acous)
+            self.active_acous_fft_chunks.append(active_acous_fft)
+
         return (
             # dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),
             dict(
                 robot_state.__dict__, 
                 color_image1=image1, 
-                color_image2=image2, 
+                color_image2=image2,
+                active_acous=active_acous, 
                 # active_acous_spec=active_acous_spec
                 active_acous_fft=active_acous_fft
                 ), # key name matters
