@@ -5,6 +5,8 @@ import numpy as np
 from gymnasium import spaces
 import gymnasium as gym
 
+import cv2
+
 from furniture_bench.envs.furniture_bench_env import FurnitureBenchEnv
 from furniture_bench.config import config
 from furniture_bench.perception.image_utils import resize, resize_crop
@@ -32,6 +34,10 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
 
         self.action_dimension = 10
 
+        self.active_acous_raw_chunks = []
+        self.active_acous_fft_chunks = []
+        self.active_acous_spec_chunks = []
+
     @property
     def observation_space(self):
         low, high = -np.inf, np.inf
@@ -51,9 +57,9 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
                 "gripper_width": gym.spaces.Box(low=low, high=high, shape=(1,)),
                 "color_image1": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
                 "color_image2": gym.spaces.Box(low=0, high=255, shape=(*img_size, 3)),
-                # "active_acous": gym.spaces.Box(low=-1, high=1, shape=(1, 4410)), ## edit range and shape later
+                "active_acous": gym.spaces.Box(low=-1, high=1, shape=(1, 4410)), ## edit range and shape later
                 # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 2206)),
-                # "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 700)), ## cropped fft
+                "active_acous_fft": gym.spaces.Box(low=0, high=high, shape=(1, 700)), ## cropped fft
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(129, 65, 1)),
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 65, 1)), # if spec is cropped to a specific range
                 # "active_acous_spec": gym.spaces.Box(low=0, high=high, shape=(40, 33, 1)), # if spec is cropped to a specific range and stepped in time
@@ -65,14 +71,14 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
     def _get_observation(self):
         """If successful, returns (obs, True); otherwise, returns (None, False)."""
         robot_state, panda_error = self.robot.get_state()
-        _, _, image1, _, image2, _, _, _, _, _, active_acous_spec = self.furniture.get_parts_poses()
+        _, _, image1, _, image2, _, _, _, active_acous, active_acous_fft, active_acous_spec = self.furniture.get_parts_poses()
         # _, _, image1, _, image2, _, _, _, _, active_acous_fft, _ = self.furniture.get_parts_poses()
 
         image1 = resize(image1)
         image2 = resize_crop(image2)
 
         # crop active acous fft to [3000, 10000] Hz
-        # active_acous_fft = active_acous_fft[:, 300:1000]
+        active_acous_fft = active_acous_fft[:, 300:1000]
 
         # crop active acous spec to [3000, 10000] Hz
         # active_acous_spec = active_acous_spec[18:58] # cropped spectrogram
@@ -88,14 +94,23 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         # # active_acous_spec = active_acous_spec[70:233]
         # active_acous_spec = active_acous_spec[70:233:4]
 
+        if self.record:
+            img_record = cv2.cvtColor(np.hstack([image1, image2]), cv2.COLOR_RGB2BGR)
+            self.video_writer.write(img_record)
+
+            self.active_acous_raw_chunks.append(active_acous)
+            self.active_acous_fft_chunks.append(active_acous_fft)
+            self.active_acous_spec_chunks.append(active_acous_spec)
+
         return (
             # dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),
             dict(
                 robot_state.__dict__, 
                 color_image1=image1, 
                 color_image2=image2, 
-                active_acous_spec=active_acous_spec
-                # active_acous_fft=active_acous_fft
+                active_acous_spec=active_acous_spec,
+                active_acous_fft=active_acous_fft,
+                active_acous=active_acous
                 ), # key name matters
             panda_error,
         )
