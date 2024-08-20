@@ -5,6 +5,8 @@ import numpy as np
 from gymnasium import spaces
 import gymnasium as gym
 
+import cv2
+
 from furniture_bench.envs.furniture_bench_env import FurnitureBenchEnv
 from furniture_bench.config import config
 from furniture_bench.perception.image_utils import resize, resize_crop
@@ -31,6 +33,8 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         self.num_envs = 1
 
         # self.action_dimension = 10 # 8
+
+        self.joint_torque_chunks = []
 
     @property
     def observation_space(self):
@@ -64,6 +68,16 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
 
         # image1 = np.expand_dims(image1, axis=0)
         # image2 = np.expand_dims(image2, axis=0)
+
+        if self.record:
+            img_record = cv2.cvtColor(np.hstack([image1, image2]), cv2.COLOR_RGB2BGR)
+            self.video_writer.write(img_record)
+
+            self.joint_torque_chunks.append(robot_state.__dict__["joint_torques"])
+
+            # self.active_acous_raw_chunks.append(active_acous)
+            # self.active_acous_fft_chunks.append(active_acous_fft)
+            # self.active_acous_spec_chunks.append(active_acous_spec)
 
         return (
             dict(robot_state.__dict__, color_image1=image1, color_image2=image2),
