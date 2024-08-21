@@ -39,7 +39,7 @@ class FurnitureBenchEnv(gym.Env):
         randomness: Union["str", Randomness] = "low",
         high_random_idx: int = -1,
         visualize_init_pose: bool = True,
-        record: bool = False,
+        record: bool = True,
         manual_reset: bool = True,
         abs_action: bool = False,
         act_rot_repr="quat"
@@ -126,13 +126,32 @@ class FurnitureBenchEnv(gym.Env):
 
         if self.record:
             record_dir = Path(
-                f"record_{furniture}/from_skill_{from_skill}_to_skill_{to_skill}"
+                f"record_tactile_image/3-prong"
             )
             record_dir.mkdir(parents=True, exist_ok=True)
-            path = record_dir / (datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".avi")
+            path_base = record_dir / (datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
+            path = Path(str(path_base) + ".avi")
+            # path = record_dir / (datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".avi")
             size = (224 * 2, 224) if self.resize_img else (1280 * 2, 720)
             fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
             self.video_writer = cv2.VideoWriter(str(path), fourcc, 20, size)
+
+            path_tactile_image = Path(str(path_base) + "_tactile_image" + ".avi")
+            size_tactile_image = (240, 320)
+            fourcc_tactile_image = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+            self.video_writer_tactile_image = cv2.VideoWriter(str(path_tactile_image), fourcc_tactile_image, 20, size_tactile_image)
+            
+            # self.path_tactile_image = Path(str(path_base) + "_tactile_image" + ".npy")
+
+        # if self.record:
+        #     record_dir = Path(
+        #         f"record_{furniture}/from_skill_{from_skill}_to_skill_{to_skill}"
+        #     )
+        #     record_dir.mkdir(parents=True, exist_ok=True)
+        #     path = record_dir / (datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".avi")
+        #     size = (224 * 2, 224) if self.resize_img else (1280 * 2, 720)
+        #     fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+        #     self.video_writer = cv2.VideoWriter(str(path), fourcc, 20, size)
 
     def _get_cam_info(self):
         """Gets intrinsic/extrinsic parameters of Intel RealSense cameras."""
@@ -334,6 +353,7 @@ class FurnitureBenchEnv(gym.Env):
             cv2.waitKey(1)
             if self.record:
                 self.video_writer.write(img)
+                self.video_writer_tactile_image.write(tactile_image)
 
         if self.resize_img:
             color_img1 = resize(color_img1)
@@ -591,6 +611,22 @@ class FurnitureBenchEnv(gym.Env):
             return None, obs_error
         gym.logger.info("[env] Reset done.")
 
+        if self.record:
+            record_dir = Path(
+                f"record_tactile_image/3-prong"
+            )
+            record_dir.mkdir(parents=True, exist_ok=True)
+            path_base = record_dir / (datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
+            path = Path(str(path_base) + ".avi")
+            size = (224 * 2, 224) if self.resize_img else (1280 * 2, 720)
+            fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+            self.video_writer = cv2.VideoWriter(str(path), fourcc, 20, size)
+
+            path_tactile_image = Path(str(path_base) + "_tactile_image" + ".avi")
+            size_tactile_image = (240, 320)
+            fourcc_tactile_image = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+            self.video_writer_tactile_image = cv2.VideoWriter(str(path_tactile_image), fourcc_tactile_image, 20, size_tactile_image)
+
         return obs
 
     def grasp_and_noise(self):
@@ -607,3 +643,4 @@ class FurnitureBenchEnv(gym.Env):
     def __del__(self):
         if self.record:
             self.video_writer.release()
+            self.video_writer_tactile_image.release()

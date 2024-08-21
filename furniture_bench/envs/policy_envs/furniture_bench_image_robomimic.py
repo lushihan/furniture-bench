@@ -5,6 +5,8 @@ import numpy as np
 from gymnasium import spaces
 import gymnasium as gym
 
+import cv2
+
 from furniture_bench.envs.furniture_bench_env import FurnitureBenchEnv
 from furniture_bench.config import config
 from furniture_bench.perception.image_utils import resize, resize_crop
@@ -72,6 +74,12 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
 
         # tactile image process
         tactile_image = tactile_image
+
+        if self.record:
+            img_record = cv2.cvtColor(np.hstack([image1, image2]), cv2.COLOR_RGB2BGR)
+            self.video_writer.write(img_record)
+            # self.video_writer_tactile_image.write(cv2.cvtColor(tactile_image, cv2.COLOR_RGB2BGR))
+            self.video_writer_tactile_image.write(tactile_image)
 
         return (
             # dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),
