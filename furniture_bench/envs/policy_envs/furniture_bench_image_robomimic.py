@@ -5,6 +5,8 @@ import numpy as np
 from gymnasium import spaces
 import gymnasium as gym
 
+import cv2
+
 from furniture_bench.envs.furniture_bench_env import FurnitureBenchEnv
 from furniture_bench.config import config
 from furniture_bench.perception.image_utils import resize, resize_crop
@@ -29,6 +31,11 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
         self.img_shape = (3, *config["furniture"]["env_img_size"])
         self.img_shape = (*config["furniture"]["env_img_size"], 3)
         self.num_envs = 1
+
+        self.force_array_chunks = []
+        # self.active_acous_raw_chunks = []
+        # self.active_acous_fft_chunks = []
+        # self.active_acous_spec_chunks = []        
 
     @property
     def observation_space(self):
@@ -77,6 +84,15 @@ class FurnitureBenchImageRobomimic(FurnitureBenchEnv):
 
         # force array process
         force_array = force_array
+
+        if self.record:
+            img_record = cv2.cvtColor(np.hstack([image1, image2]), cv2.COLOR_RGB2BGR)
+            self.video_writer.write(img_record)
+
+            self.force_array_chunks.append(force_array)
+            # self.active_acous_raw_chunks.append(active_acous)
+            # self.active_acous_fft_chunks.append(active_acous_fft)
+            # self.active_acous_spec_chunks.append(active_acous_spec)
 
         return (
             # dict(robot_state.__dict__, color_image1=image1, color_image2=image2, active_acous=active_acous),

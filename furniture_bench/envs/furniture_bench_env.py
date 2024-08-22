@@ -39,7 +39,7 @@ class FurnitureBenchEnv(gym.Env):
         randomness: Union["str", Randomness] = "low",
         high_random_idx: int = -1,
         visualize_init_pose: bool = True,
-        record: bool = False,
+        record: bool = True,
         manual_reset: bool = True,
         abs_action: bool = False,
         act_rot_repr="quat"
@@ -126,13 +126,29 @@ class FurnitureBenchEnv(gym.Env):
 
         if self.record:
             record_dir = Path(
-                f"record_{furniture}/from_skill_{from_skill}_to_skill_{to_skill}"
+                f"record_force_array/3-prong"
             )
             record_dir.mkdir(parents=True, exist_ok=True)
-            path = record_dir / (datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".avi")
+            path_base = record_dir / (datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
+            path = Path(str(path_base) + ".avi")
+            # path = record_dir / (datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".avi")
             size = (224 * 2, 224) if self.resize_img else (1280 * 2, 720)
             fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
             self.video_writer = cv2.VideoWriter(str(path), fourcc, 20, size)
+
+            self.path_force_array = Path(str(path_base) + "_force_array" + ".npy")
+            # self.path_audio_fft = Path(str(path_base) + "_fft" + ".npy")
+            # self.path_audio_spec = Path(str(path_base) + "_spec" + ".npy")
+
+        # if self.record:
+        #     record_dir = Path(
+        #         f"record_{furniture}/from_skill_{from_skill}_to_skill_{to_skill}"
+        #     )
+        #     record_dir.mkdir(parents=True, exist_ok=True)
+        #     path = record_dir / (datetime.now().strftime("%Y-%m-%d-%H:%M:%S") + ".avi")
+        #     size = (224 * 2, 224) if self.resize_img else (1280 * 2, 720)
+        #     fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+        #     self.video_writer = cv2.VideoWriter(str(path), fourcc, 20, size)
 
     def _get_cam_info(self):
         """Gets intrinsic/extrinsic parameters of Intel RealSense cameras."""
@@ -452,6 +468,20 @@ class FurnitureBenchEnv(gym.Env):
     def reset(self):
         gym.logger.info("[env] Resetting environment.")
 
+        # save obs data
+        # save force array 
+        np.save(self.path_force_array, np.array(self.force_array_chunks))
+
+        self.force_array_chunks.clear()
+
+        # np.save(self.path_audio_raw, np.array(self.active_acous_raw_chunks))
+        # np.save(self.path_audio_fft, np.array(self.active_acous_fft_chunks))
+        # np.save(self.path_audio_spec, np.array(self.active_acous_spec_chunks))
+
+        # self.active_acous_raw_chunks.clear()
+        # self.active_acous_fft_chunks.clear()
+        # self.active_acous_spec_chunks.clear()
+
         # Reset robot.
         robot_success = self.robot.reset(self.randomness)
         if not robot_success:
@@ -593,6 +623,23 @@ class FurnitureBenchEnv(gym.Env):
             gym.logger.warn("[env] Warning: Getting observation was not successful.")
             return None, obs_error
         gym.logger.info("[env] Reset done.")
+
+        if self.record:
+            record_dir = Path(
+                f"record_force_array/3-prong"
+            )
+            record_dir.mkdir(parents=True, exist_ok=True)
+            path_base = record_dir / (datetime.now().strftime("%Y-%m-%d-%H-%M-%S"))
+            path = Path(str(path_base) + ".avi")
+            size = (224 * 2, 224) if self.resize_img else (1280 * 2, 720)
+            fourcc = cv2.VideoWriter_fourcc("M", "J", "P", "G")
+            self.video_writer = cv2.VideoWriter(str(path), fourcc, 20, size)
+
+            self.path_force_array = Path(str(path_base) + "_force_array" + ".npy")
+            
+            # self.path_audio_raw = Path(str(path_base) + "_raw" + ".npy")
+            # self.path_audio_fft = Path(str(path_base) + "_fft" + ".npy")
+            # self.path_audio_spec = Path(str(path_base) + "_spec" + ".npy")
 
         return obs
 
